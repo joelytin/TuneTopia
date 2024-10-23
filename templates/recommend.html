@@ -1,0 +1,32 @@
+{% extends "base.html" %} {% block content %}
+
+<h1>Music Recommendations</h1>
+<p>This is the music recommendation page.</p>
+
+<p>New Spotify user? <a href="{{ url_for('new_user_form') }}">Click here</a></p>
+<p>
+  <button onclick="window.location.href='{{ url_for('recommend') }}'">
+    Recommend Me Songs
+  </button>
+</p>
+
+<div id="recommendations">
+  {% if recommendations %}
+  <h2>Recommended Tracks</h2>
+  {% for track in recommendations %}
+  <div class="track">
+    <span class="track-number">{{ loop.index }}</span>
+    <img
+      src="{{ track.album.images[0].url }}"
+      alt="{{ track.album.name }}"
+      width="100"
+    />
+    <h3>{{ track.name }}</h3>
+    <p>Artist: {{ track.artists[0].name }}</p>
+    <p>Album: {{ track.album.name }}</p>
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+
+{% endblock %}

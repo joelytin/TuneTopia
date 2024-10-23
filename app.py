@@ -59,7 +59,7 @@ def recommend():
 
         # Filter out track IDs that are not present in the dataset
         matched_track_ids = [
-            track_id for track_id in user_top_track_ids if track_id in dataset['track_id_column']
+            track_id for track_id in user_top_track_ids if track_id in dataset['track_id']
         ]
 
         # Check if any matched IDs exist

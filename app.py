@@ -120,41 +120,6 @@ def callback():
 
       return redirect(url_for('home'))
    
-'''
-@app.route('/playlists')
-def get_playlists():
-   if 'access_token' not in session:
-      return redirect('/login')
-   
-   # Ensure access token is expired
-   if datetime.now().timestamp() > session['expires_at']:
-      return redirect('/refresh-token')
-   
-   headers = {
-      'Authorization': f"Bearer {session['access_token']}"
-   }
-
-   response = requests.get(API_BASE_URL + 'me/playlists', headers=headers)
-   playlists = response.json()
-
-   return render_template('playlists.html', playlists=playlists['items'])
-
-# To check JSON contents only
-@app.route('/playlists-json')
-def get_playlists_json():
-    if 'access_token' not in session:
-        return redirect('/login')
-    
-    if datetime.now().timestamp() > session['expires_at']:
-        return redirect('/refresh-token')
-    
-    headers = {
-        'Authorization': f"Bearer {session['access_token']}"
-    }
-    response = requests.get(API_BASE_URL + 'me/playlists', headers=headers)
-    playlists = response.json()
-    return jsonify(playlists)
-'''
 
 # Refresh token
 @app.route('/refresh-token')
@@ -213,22 +178,6 @@ def new_user_recommendations():
     recommendations = hybrid_recommendations(user_top_track_ids, dataset)
     return render_template('new_user.html', recommendations=recommendations)
 
-    '''
-    # Search for the artists
-    artist_ids = []
-    for artist in [artist1, artist2, artist3]:
-        response = requests.get(API_BASE_URL + f'search?q={artist}&type=artist', headers=headers)
-        result = response.json()
-        if result['artists']['items']:
-            artist_ids.append(result['artists']['items'][0]['id'])
-    
-    # Get recommendations based on artist IDs
-    artist_ids_str = ','.join(artist_ids)
-    response = requests.get(API_BASE_URL + f'recommendations?seed_artists={artist_ids_str}', headers=headers)
-    recommendations = response.json()['tracks']
-
-    return render_template('recommendations.html', recommendations=recommendations)
-   '''
     
 def get_top_tracks_for_artists(artists):
    top_tracks = []

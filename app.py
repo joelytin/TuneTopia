@@ -57,6 +57,17 @@ def recommend():
         user_top_tracks = response_data['items']
         user_top_track_ids = [track['id'] for track in user_top_tracks]
 
+        # Filter out track IDs that are not present in the dataset
+        matched_track_ids = [
+            track_id for track_id in user_top_track_ids if track_id in dataset['track_id_column']
+        ]
+
+        # Check if any matched IDs exist
+        if not matched_track_ids:
+            print("No matching track IDs found in dataset.")
+            return jsonify({"error": "No matching tracks found in the dataset."})
+
+        # Proceed with recommendations using matched tracks
         recommendations = hybrid_recommendations(user_top_track_ids, dataset)
         return render_template('recommend.html', recommendations=recommendations)
     else:

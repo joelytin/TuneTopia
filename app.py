@@ -35,34 +35,36 @@ def home():
 def about():
    return render_template('about.html')
 
+# @app.route('/recommend')
+# def recommend():
+   if 'access_token' not in session:
+      return redirect(url_for('login'))
+   
+   if datetime.now().timestamp() > session['expires_at']:
+      return redirect(url_for('refresh_token'))
+   
+   headers = {
+      'Authorization': f"Bearer {session['access_token']}"
+   }
+   response = requests.get(API_BASE_URL + 'me/top/tracks', headers=headers)
+
+   # Print the status code and response content for debugging
+   print("Response Status Code:", response.status_code)
+   print("Response JSON:", response.json())
+
+   response_data = response.json()
+   if 'items' in response_data:
+      user_top_tracks = response_data['items']
+      user_top_track_ids = [track['id'] for track in user_top_tracks]
+
+      recommendations = hybrid_recommendations(user_top_track_ids, dataset)
+      return render_template('recommend.html', recommendations=recommendations)
+   else:
+      return jsonify({"error": "Failed to get top tracks. Please try again later."})
+   
 @app.route('/recommend')
 def recommend():
-    if 'access_token' not in session:
-        return redirect(url_for('login'))
-    
-    if datetime.now().timestamp() > session['expires_at']:
-        return redirect(url_for('refresh_token'))
-    
-    headers = {
-        'Authorization': f"Bearer {session['access_token']}"
-    }
-    response = requests.get(API_BASE_URL + 'me/top/tracks', headers=headers)
-
-    # Print the status code and response content for debugging
-    print("Response Status Code:", response.status_code)
-    print("Response JSON:", response.json())
-
-    response_data = response.json()
-    if 'items' in response_data:
-        user_top_tracks = response_data['items']
-        user_top_track_ids = [track['id'] for track in user_top_tracks]
-
-        recommendations = hybrid_recommendations(user_top_track_ids, dataset)
-        return render_template('recommend.html', recommendations=recommendations)
-    else:
-        return jsonify({"error": "Failed to get top tracks. Please try again later."})
-   
-
+   return render_template('recommend.html')
 
 @app.route('/login')
 def login():

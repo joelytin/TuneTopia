@@ -14,7 +14,27 @@
     <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
   </head>
   <body>
-    <h1>Welcome to Spotify Music Recommender System</h1>
-    <a href="{{ url_for('login') }}">Login with Spotify</a>
+    <main>
+      <h1 class="title">Welcome to TuneTopia!</h1>
+      <p class="subtitle">Your personalised music discovery platform</p>
+      <a class="login-btn" href="{{ url_for('login') }}">Login with Spotify</a>
+    </main>
+    <footer>
+      <div class="social-icons">
+        <a href=""><img src="{{ url_for('static', filename='/assets/images/github.svg') }}" />GitHub</a>
+        <a href="">LinkedIn</a>
+      </div>
+      <div class="footer-nav">
+        <ul>
+          <li><a href="{{ url_for('home') }}">Home</a></li>
+          <li><a href="{{ url_for('about') }}">About</a></li>
+          <li><a href="{{ url_for('recommend') }}">Recommend me Songs</a></li>
+          
+        </ul>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 TuneTopia. Designed by Joely Tin. All rights reserved.</p>
+      </div>
+    </footer>
   </body>
 </html>

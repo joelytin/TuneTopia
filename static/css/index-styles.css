@@ -1,3 +1,47 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
 h1 {
     font-family: 'Staatliches', sans-serif;
+}
+
+.title {
+    font-size: 3rem;
+    margin-bottom: 0;
+}
+
+.subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 0;
+}
+
+.login-btn {
+    background-color: #FD6A02;
+    color: #fff;
+    border: none;
+    margin-top: 1rem;
+    padding: 20px 50px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+    background-color: #FD8835;
 }

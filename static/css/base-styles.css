@@ -37,3 +37,90 @@ nav div:hover {
    background-color: #ddd;
    color: black;
 }
+
+/* Footer */
+footer {
+   background-color: #1D3446;
+   color: #fff;
+   padding: 20px;
+   text-align: center;
+   font-family: 'Montserrat', sans-serif;
+   width: 100%;
+   height: 13rem;
+   position: fixed;
+   bottom: 0;
+}
+
+.social-icons {
+   display: flex;
+   justify-content: center;
+   margin-bottom: 20px;
+}
+
+.social-icons a {
+   color: #fff;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   text-decoration: none;
+   position: relative;
+   width: 100px;
+   margin: 0.25rem 0.5rem;
+   img {
+       width: 70px;
+   }
+   &::before {
+       content: "";
+       opacity: 0;
+       transition: all 0.2s;
+       position: absolute;
+       background: radial-gradient(#223640 40%, transparent 70%);
+       top: -15px;
+       left: -15px;
+       height: 130px;
+       width: 130px;
+       border-radius: 100%;
+       z-index: -5;
+   }
+   div.hidden-label {
+       opacity: 0;
+       transition: all 0.2s;
+       color: #fff;
+       font-size: 0.8rem;;
+   }
+   &:focus, &:hover {
+       &::before, div.hidden-label {
+           opacity: 1;
+       }
+   }
+}
+
+.footer-nav {
+   margin-bottom: 50px;
+}    
+
+.footer-nav ul {
+   list-style: none;
+   padding: 0;
+   margin: 0;
+   display: flex;
+   justify-content: center;
+}
+
+.footer-nav li {
+   margin: 0 15px;
+}    
+
+.footer-nav a {
+   color: #fff;
+   text-decoration: none;
+   font-size: 1rem;
+}
+
+.footer-nav a:hover {
+   text-decoration: underline;
+}
+
+.footer-bottom {
+   font-size: 0.8rem;
+}

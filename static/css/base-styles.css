@@ -48,6 +48,9 @@ nav div {
    padding: 14px 20px;
    text-decoration: none;
    border-radius: 50px;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
 }
 
 .nav-link {

@@ -1,5 +1,15 @@
 {% extends "base.html" %} {% block content %}
 
-<h1>Welcome, {{ session['user_name'] }}!</h1>
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/home-styles.css') }}"
+/>
+
+<main>
+    <h1 class="title">Welcome, {{ session['user_name'] }}!</h1>
+    <p class="subtitle">Personalised music discovery platform</p>
+
+    <a class="recommendations-btn" href="{{ url_for('recommend') }}">Give me recommendations</a>
+</main>
 
 {% endblock %}

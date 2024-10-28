@@ -66,6 +66,10 @@ def about():
 def recommend():
    return render_template('recommend.html')
 
+@app.route('/metronome')
+def metronome():
+   return render_template('metronome.html')
+
 @app.route('/login')
 def login():
    scope = 'user-read-private user-read-email user-library-read user-top-read'

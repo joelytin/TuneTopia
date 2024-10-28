@@ -15,7 +15,7 @@ nav {
 
 nav a {
    text-decoration: none; /* Remove underline */
-   color: #000;
+   color: #44546C;
 }
 
 .logo {
@@ -118,7 +118,7 @@ footer {
 }
 
 .footer-nav a:hover {
-   text-decoration: underline;
+   color: #B19B85;
 }
 
 .footer-bottom {

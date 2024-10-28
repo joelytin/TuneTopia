@@ -26,5 +26,29 @@
     {% endif %}
 
     <div class="content">{% block content %}{% endblock %}</div>
+
+    <footer>
+      <div class="social-icons">
+        <a href="https://github.com/joelytin">
+          <img src="{{ url_for('static', filename='/images/github.svg') }}" />
+          <div class="hidden-label">GitHub</div>
+        </a>
+        <a href="httpsL//www.linkedin.com/in/joelytin">
+          <img src="{{ url_for('static', filename='/images/linkedin.svg') }}" />
+          <div class="hidden-label">LinkedIn</div>
+        </a>
+      </div>
+      <div class="footer-nav">
+        <ul>
+          <li><a href="{{ url_for('home') }}">Home</a></li>
+          <li><a href="{{ url_for('about') }}">About</a></li>
+          <li><a href="{{ url_for('recommend') }}">Recommend me Songs</a></li>
+          <li><a href="{{ url_for('metronome') }}">Metronome</a></li>
+        </ul>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 TuneTopia. Designed by Joely Tin. All rights reserved.</p>
+      </div>
+    </footer>
   </body>
 </html>

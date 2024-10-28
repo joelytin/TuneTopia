@@ -1,7 +1,14 @@
-body {
+body, html {
    font-family: Montserrat, sans-serif;
    margin: 0;
    padding: 0;
+   height: 100%;
+   display: flex;
+   flex-direction: column;
+}
+
+h1, h2, h3 {
+   font-family: 'Staatliches', sans-serif;
 }
 
 nav {
@@ -45,6 +52,13 @@ nav div {
 
 .logout-btn:hover {
    background-color: #3d688727;
+}
+
+/* Main content */
+.content {
+   padding: 1.5rem 2.5rem;
+   background-color: lightblue;
+   flex-grow: 1;
 }
 
 /* Footer */

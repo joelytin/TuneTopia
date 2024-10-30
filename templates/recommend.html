@@ -1,14 +1,28 @@
 {% extends "base.html" %} {% block content %}
 
-<h1>Music Recommendations</h1>
-<p>This is the music recommendation page.</p>
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/recommend-styles.css') }}"
+/>
 
-<p>New Spotify user? <a href="{{ url_for('new_user_form') }}">Click here</a></p>
-<p>
-  <button onclick="window.location.href='{{ url_for('recommend') }}'">
-    Recommend Me Songs
-  </button>
-</p>
+<section>
+  <div class="long-time-user-container">
+    <h2 class="title">Long-time Spotify user?</h2>
+    <p>Generate recommendations based on your Spotify data. <br>Results will appear below.</p>
+    <button class="generate-btn">Generate</button>
+  </div>
+
+  <div class="new-user-container">
+    <h2 class="title">New Spotify user?</h2>
+    <p>You may not have enough historical data on your account.</p>
+    <a class="new-user-btn" href="{{ url_for('new_user_form') }}">New users click here</a>
+  </div>
+  <!-- <p>
+    <button onclick="window.location.href='{{ url_for('recommend') }}'">
+      Recommend me songs
+    </button>
+  </p> -->
+</section>
 
 <div id="recommendations">
   {% if recommendations %}

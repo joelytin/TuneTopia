@@ -10,16 +10,32 @@ section {
     margin-bottom: 0;
 }
 
-.title-container {
-    background-color: lightblue;
-}
-
 .description-container {
-    background-color: lightgreen;
+    max-width: 50rem;
+    text-align: center;
 }
 
 .description {
     font-size: 1rem;
     margin-top: 1rem;
-    text-align: center;
+}
+
+.recommendations-btn {
+    background-color: #FD6A02;
+    color: #fff;
+    border: none;
+    margin-top: 1rem;
+    padding: 20px 50px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.recommendations-btn:hover {
+    background-color: #FD8835;
 }

@@ -8,6 +8,11 @@ const subtractBeats = document.querySelector('.subtract-beats');
 const addBeats = document.querySelector('.add-beats');
 const measureCount = document.querySelector('.measure-count');
 
+const click1 = new Audio('Perc_Tongue_hi.wav');
+const click2 = new Audio('Perc_Tongue_lo.wav');
+
+click2.play();
+
 let bpm = 140;
 let beatsPerMeasure = 4;
 let tempoTextString = 'Medium';

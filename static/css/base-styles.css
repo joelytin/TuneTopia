@@ -102,7 +102,6 @@ footer {
 .social-icons {
    display: flex;
    justify-content: center;
-   margin-bottom: 20px;
 }
 
 .social-icons a {

@@ -1,0 +1,44 @@
+section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+}
+
+.long-time-user-container, .new-user-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+}
+
+.title {
+    font-size: 2rem;
+    margin-bottom: 0;
+}
+
+p {
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.new-user-btn, .generate-btn {
+    background-color: #FD6A02;
+    color: #fff;
+    border: none;
+    margin-top: 1rem;
+    padding: 20px 50px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.new-user-btn:hover, .generate-btn:hover {
+    background-color: #FD8835;
+}

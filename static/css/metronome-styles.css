@@ -99,6 +99,32 @@ input[type="range"]::-moz-range-track {
     background: #ddd;
 }
 
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 65%;
+    margin: 0 auto;
+}
+
+.tap-tempo {
+    width: 100px;
+    height: 50px;
+    font-size: 0.7em;
+    text-align: center;
+    border: 1px solid #fa545c;
+    border-radius: 50px;
+    color: #fa545c;
+    line-height: 50px;
+    cursor: pointer;
+    margin: 0 auto;
+    transition: background-color 0.3s ease;
+}
+
+.tap-tempo:hover {
+    background: #fa545c1a;
+}
+
 .start-stop {
     width: 50px;
     height: 50px;
@@ -110,6 +136,7 @@ input[type="range"]::-moz-range-track {
     line-height: 50px;
     cursor: pointer;
     margin: 0 auto;
+    transition: background-color 0.3s ease;
 }
 
 .start-stop:hover {
@@ -128,8 +155,9 @@ input[type="range"]::-moz-range-track {
     border: 1px solid #ddd;
     text-align: center;
     line-height: 20px;
-    margin: 0 5px;
+    margin: 0 15px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .measures .stepper:hover {

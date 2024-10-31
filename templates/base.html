@@ -17,6 +17,13 @@
     {% if session.get('access_token') %}
     <nav>
       <a class="logo" href="/">TUNETOPIA</a>
+
+      <div class="hamburger" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
       <div class="nav-links">
         <div class="nav-link">
           <a href="{{ url_for('home') }}" class="{% if request.path == url_for('home') %}active{% endif %}">Home</a>

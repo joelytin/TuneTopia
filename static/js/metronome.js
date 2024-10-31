@@ -5,6 +5,7 @@ const tempoText = document.querySelector('.tempo-text');
 const decreaseTempoBtn = document.querySelector('.decrease-tempo');
 const increaseTempoBtn = document.querySelector('.increase-tempo');
 const tempoSlider = document.querySelector('.slider');
+const tapTempoBtn = document.querySelector('.tap-tempo');
 const startStopBtn = document.querySelector('.start-stop');
 const subtractBeats = document.querySelector('.subtract-beats');
 const addBeats = document.querySelector('.add-beats');
@@ -18,6 +19,7 @@ let beatsPerMeasure = 4;
 let count = 0;
 let isRunning = false;
 let tempoTextString = 'Medium';
+let tapTimestamps = [];
 
 decreaseTempoBtn.addEventListener('click', () => {
     if (bpm <= 20) { return };
@@ -48,6 +50,35 @@ addBeats.addEventListener('click', () => {
     beatsPerMeasure++;
     measureCount.textContent = beatsPerMeasure;
     count = 0;
+});
+
+tapTempoBtn.addEventListener('click', () => {
+    const now = Date.now();
+
+    // Clear taps if more than 2 seconds have passed since the last tap
+    if (tapTimestamps.length && (now - tapTimestamps[tapTimestamps.length - 1]) > 2000) {
+        tapTimestamps = [];
+    }
+
+    // Add current tap timestamp
+    tapTimestamps.push(now);
+
+    // Calculate BPM if there are at least 2 taps
+    if (tapTimestamps.length >= 2) {
+        const intervals = [];
+        for (let i = 1; i < tapTimestamps.length; i++) {
+            intervals.push(tapTimestamps[i] - tapTimestamps[i - 1]);
+        }
+
+        // Calculate average interval in milliseconds
+        const averageInterval = intervals.reduce((a, b) => a + b) / intervals.length;
+        // Convert interval to BPM (60,000 ms per min)
+        bpm = Math.round(60000 / averageInterval);
+        // Limit BPM to the slider's min and max range
+        bpm = Math.max(20, Math.min(280, bpm));
+        // Update metronome with new BPM
+        updateMetronome();
+    }
 });
 
 startStopBtn.addEventListener('click', () => {

@@ -18,12 +18,14 @@
     <nav>
       <a class="logo" href="/">TUNETOPIA</a>
 
+      <!-- Hamburger Icon -->
       <div class="hamburger" onclick="toggleMenu()">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
       </div>
 
+      <!-- Main navigation links -->
       <div class="nav-links">
         <div class="nav-link">
           <a href="{{ url_for('home') }}" class="{% if request.path == url_for('home') %}active{% endif %}">Home</a>
@@ -44,6 +46,7 @@
 
     <div class="content">{% block content %}{% endblock %}</div>
 
+    <!-- Footer -->
     <footer>
       <div class="social-icons">
         <a href="https://github.com/joelytin">
@@ -67,5 +70,23 @@
         <p>&copy; 2024 TuneTopia. Designed by Joely Tin. All rights reserved.</p>
       </div>
     </footer>
+
+    <script>
+      function toggleMenu() {
+        const hamburger = document.querySelector(".hamburger");
+        const navLinks = document.querySelector(".nav-links");
+        hamburger.classList.toggle("active");
+        navLinks.classList.toggle("active");
+      }
+  
+      // Close the menu when a link is clicked
+      document.querySelectorAll(".nav-links a").forEach(link =>
+        link.addEventListener("click", () => {
+          document.querySelector(".hamburger").classList.remove("active");
+          document.querySelector(".nav-links").classList.remove("active");
+        })
+      );
+    </script>
+      
   </body>
 </html>

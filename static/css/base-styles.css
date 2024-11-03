@@ -5,6 +5,7 @@ body, html {
    height: 100%;
    display: flex;
    flex-direction: column;
+   overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 h1, h2, h3 {
@@ -74,12 +75,13 @@ nav {
    display: flex;
    justify-content: space-between;
    align-items: center;
-   padding: 0 30px;
+   padding: 0 2.5rem;
    height: 5rem;
    z-index: 999;
    position: fixed;
    width: 100%;
    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+   box-sizing: border-box;
 }
 
 nav a {
@@ -93,21 +95,20 @@ nav a {
    font-size: 1.5rem;
 }
 
-nav div {
-   float: left;
-   display: block;
-   color: #f2f2f2;
-   text-align: center;
-   padding: 14px 20px;
-   text-decoration: none;
-   border-radius: 50px;
+.nav-links {
    display: flex;
-   justify-content: space-between;
    align-items: center;
+   justify-content: space-between;
 }
 
 .nav-link {
+   text-decoration: none;
+   border-radius: 50px;
+   padding: 14px 20px;
+   border-radius: 50px;
    transition: background-color 0.3s ease;
+   float: left;
+   color: #f2f2f2;
 }
 
 .nav-link:hover {
@@ -117,6 +118,7 @@ nav div {
 .logout-btn {
    border: 1px solid #3D6887;
    border-radius: 50px;
+   padding: 14px 20px;
    cursor: pointer;
    transition: background-color 0.3s ease;
 }

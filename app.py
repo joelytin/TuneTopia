@@ -27,6 +27,10 @@ def index():
       return redirect(url_for('home'))
    return render_template('index.html')
 
+@app.route('/test')
+def test():
+   return render_template('test.html')
+
 @app.route('/home')
 def home():
    return render_template('home.html')

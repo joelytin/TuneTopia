@@ -113,8 +113,11 @@ def callback():
       session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
       # Access token only lasts for 1 day
 
+      # Fetch user profile
       user_profile = requests.get(API_BASE_URL + 'me', headers={'Authorization': f"Bearer {token_info['access_token']}"})
       user_info = user_profile.json()
+
+      # Store additional user profile data in session
       session['user_name'] = user_info['display_name']
 
       return redirect(url_for('home'))

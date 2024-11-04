@@ -6,6 +6,10 @@
 />
 
 <main>
+    {% if session['user_image'] %}
+    <img class="profile-img" src="{{ session['user_image'] }}" alt="Profile Image">
+    {% endif %}
+
     <h1 class="title">Welcome, {{ session['user_name'] }}!</h1>
     <p class="subtitle">Personalised music discovery platform</p>
 

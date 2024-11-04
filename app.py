@@ -119,6 +119,11 @@ def callback():
 
       # Store additional user profile data in session
       session['user_name'] = user_info['display_name']
+      session['user_id'] = user_info['id']
+      session['user_email'] = user_info['email']
+      session['user_uri'] = user_info['uri']
+      session['user_link'] = user_info['external_urls']['spotify']
+      session['user_image'] = user_info['images'][0]['url'] if user_info.get('images') else None
 
       return redirect(url_for('home'))
    

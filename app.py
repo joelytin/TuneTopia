@@ -4,7 +4,7 @@ import pandas as pd
 
 from datetime import datetime, timedelta
 from flask import Flask, redirect, request, jsonify, session, render_template, url_for
-from recommendation import preprocess_data, hybrid_recommendations
+from recommendation import preprocess_data, hybrid_recommendations, collaborative_recommendations, content_based_recommendations
 
 
 app = Flask(__name__)
@@ -165,25 +165,31 @@ def new_user_form():
 
 @app.route('/new_user_recommendations', methods=['POST'])
 def new_user_recommendations():
-    artist1 = request.form['artist1']
-    artist2 = request.form['artist2']
-    artist3 = request.form['artist3']
+   artist1 = request.form['artist1']
+   artist2 = request.form['artist2']
+   artist3 = request.form['artist3']
 
-    if 'access_token' not in session:
-        return redirect(url_for('login'))
-    
-    if datetime.now().timestamp() > session['expires_at']:
-        return redirect(url_for('refresh_token'))
+   if 'access_token' not in session:
+      return redirect(url_for('login'))
+   
+   if datetime.now().timestamp() > session['expires_at']:
+      return redirect(url_for('refresh_token'))
 
-    headers = {
-        'Authorization': f"Bearer {session['access_token']}"
-    }
-    
-    user_top_tracks = get_top_tracks_for_artists([artist1, artist2, artist3])
-    user_top_track_ids = [track['id'] for track in user_top_tracks]
+   headers = {
+      'Authorization': f"Bearer {session['access_token']}"
+   }
+   
+   # Get top tracks for the artists
+   user_top_tracks = get_top_tracks_for_artists([artist1, artist2, artist3])
+   user_top_track_ids = [track['id'] for track in user_top_tracks]
 
-    recommendations = hybrid_recommendations(user_top_track_ids, dataset)
-    return render_template('new_user.html', recommendations=recommendations)
+   # Get content-based recommendations
+   content_recommendations = content_based_recommendations(user_top_track_ids[0], dataset)  # Adjust this based on how you call content-based filtering
+
+   # Convert content recommendations to a list of dictionaries for easier use in the template
+   recommendations_list = content_recommendations[['track_name', 'artists', 'album_name', 'popularity']].to_dict(orient='records')
+   
+   return render_template('new_user.html', recommendations=recommendations_list)
 
     
 def get_top_tracks_for_artists(artists):

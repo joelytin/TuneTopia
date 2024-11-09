@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% block content %}
+
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/metronome-styles.css') }}"
+/>
+
+<div class="container">
+    <div class="metronome">
+        <div class="bpm-display">
+            <span class="tempo">140</span>
+            <span class="bpm">BPM</span>
+        </div>
+
+        <div class="tempo-text">Nice and steady</div>
+
+        <div class="tempo-settings">
+            <div class="adjust-tempo-btn decrease-tempo">-</div>
+            <input type="range" min="20" max="280" step="1" class="slider">
+            <div class="adjust-tempo-btn increase-tempo">+</div>
+        </div>
+
+        <div class="button-container">
+            <div class="tap-tempo">TAP TEMPO</div>
+            <div class="start-stop">START</div>
+        </div>
+
+        <div class="measures">
+            <div class="subtract-beats stepper">-</div>
+            <div class="measure-count">4</div>
+            <div class="add-beats stepper">+</div>
+        </div>
+        <span class="beats-per-measure-text">Beats per measure</span>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/metronome.js') }}" type="module" defer></script>
+
+{% endblock %}

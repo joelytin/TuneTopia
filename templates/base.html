@@ -3,23 +3,90 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spotify Music Recommender</title>
+    <title>TuneTopia - Spotify Music Recommender</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Staatliches&display=swap" rel="stylesheet">
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/styles.css') }}"
+      href="{{ url_for('static', filename='css/base-styles.css') }}"
     />
   </head>
 
   <body>
     {% if session.get('access_token') %}
     <nav>
-      <div><a href="{{ url_for('home') }}">Home</a></div>
-      <div><a href="{{ url_for('about') }}">About</a></div>
-      <div><a href="{{ url_for('recommend') }}">Recommend me Songs</a></div>
-      <div><a href="{{ url_for('logout') }}">Logout</a></div>
+      <a class="logo" href="/">TUNETOPIA</a>
+
+      <!-- Hamburger Icon -->
+      <div class="hamburger" onclick="toggleMenu()">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
+
+      <!-- Main navigation links -->
+      <div class="nav-links">
+        <div class="nav-link">
+          <a href="{{ url_for('home') }}" class="{% if request.path == url_for('home') %}active{% endif %}">Home</a>
+        </div>
+        <div class="nav-link">
+          <a href="{{ url_for('about') }}" class="{% if request.path == url_for('about') %}active{% endif %}">About</a>
+        </div>
+        <div class="nav-link">
+          <a href="{{ url_for('recommend') }}" class="{% if request.path == url_for('recommend') %}active{% endif %}">Recommend me songs</a>
+        </div>
+        <div class="nav-link">
+          <a href="{{ url_for('metronome') }}" class="{% if request.path == url_for('metronome') %}active{% endif %}">Metronome</a>
+        </div>
+      </div>
+      <div class="logout-btn"><a href="{{ url_for('logout') }}">Logout</a></div>
     </nav>
     {% endif %}
 
     <div class="content">{% block content %}{% endblock %}</div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="social-icons">
+        <a href="https://github.com/joelytin" target="_blank">
+          <img src="{{ url_for('static', filename='/images/github.svg') }}" />
+          <div class="hidden-label">GitHub</div>
+        </a>
+        <a href="https://www.linkedin.com/in/joelytin" target="_blank">
+          <img src="{{ url_for('static', filename='/images/linkedin.svg') }}" />
+          <div class="hidden-label">LinkedIn</div>
+        </a>
+      </div>
+      <div class="footer-nav">
+        <ul>
+          <li><a href="{{ url_for('home') }}">Home</a></li>
+          <li><a href="{{ url_for('about') }}">About</a></li>
+          <li><a href="{{ url_for('recommend') }}">Recommend me songs</a></li>
+          <li><a href="{{ url_for('metronome') }}">Metronome</a></li>
+        </ul>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 TuneTopia. Designed by Joely Tin. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      function toggleMenu() {
+        const hamburger = document.querySelector(".hamburger");
+        const navLinks = document.querySelector(".nav-links");
+        hamburger.classList.toggle("active");
+        navLinks.classList.toggle("active");
+      }
+  
+      // Close the menu when a link is clicked
+      document.querySelectorAll(".nav-links a").forEach(link =>
+        link.addEventListener("click", () => {
+          document.querySelector(".hamburger").classList.remove("active");
+          document.querySelector(".nav-links").classList.remove("active");
+        })
+      );
+    </script>
+      
   </body>
 </html>

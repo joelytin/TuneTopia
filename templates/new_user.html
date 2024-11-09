@@ -28,6 +28,19 @@
 
         <!-- Button to clear fields? -->
     </form>
+
+    {% if recommendations %}
+        <h3>Recommended Tracks</h3>
+        <ul>
+            {% for track in recommendations.itertuples() %}
+                <li>
+                    <strong>{{ track.track_name }}</strong> by {{ track.artists }}
+                    <br>
+                    Album: {{ track.album_name }} | Popularity: {{ track.popularity }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 </section>
 
 

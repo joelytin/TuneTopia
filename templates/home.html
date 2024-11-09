@@ -1,6 +1,19 @@
 {% extends "base.html" %} {% block content %}
 
-<h1>Home</h1>
-<p>Welcome, {{ session['user_name'] }}!</p>
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/home-styles.css') }}"
+/>
+
+<main>
+    {% if session['user_image'] %}
+    <img class="profile-img" src="{{ session['user_image'] }}" alt="Profile Image">
+    {% endif %}
+
+    <h1 class="title">Welcome, {{ session['user_name'] }}!</h1>
+    <p class="subtitle">Personalised music discovery platform</p>
+
+    <a class="recommendations-btn" href="{{ url_for('recommend') }}">Give me recommendations</a>
+</main>
 
 {% endblock %}

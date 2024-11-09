@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block content %}
+
+<h1>Test: Display Spotify Profile Data</h1>
+<p>Logged in as: {{ session['user_name'] }}</p>
+<p>User ID: {{ session['user_id'] }}</p>
+<p>Email: {{ session['user_email'] }}</p>
+<p>Spotify URI: {{ session['user_uri'] }}</p>
+<p>Profile Link: <a href="{{ session['user_link'] }}" target="_blank">{{ session['user_link'] }}</a></p>
+
+{% if session['user_image'] %}
+   <p>Profile Image:</p>
+   <img src="{{ session['user_image'] }}" alt="Profile Image" width="150">
+{% endif %}
+
+
+
+{% endblock %}

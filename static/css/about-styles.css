@@ -1,0 +1,41 @@
+section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+}
+
+.title {
+    font-size: 3rem;
+    margin-bottom: 0;
+}
+
+.description-container {
+    max-width: 50rem;
+    text-align: center;
+}
+
+.description {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+}
+
+.recommendations-btn {
+    background-color: #FD6A02;
+    color: #fff;
+    border: none;
+    margin-top: 1rem;
+    padding: 20px 50px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.recommendations-btn:hover {
+    background-color: #FD8835;
+}

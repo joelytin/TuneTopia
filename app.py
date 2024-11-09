@@ -4,7 +4,7 @@ import pandas as pd
 
 from datetime import datetime, timedelta
 from flask import Flask, redirect, request, jsonify, session, render_template, url_for
-from recommendation import preprocess_data, hybrid_recommendations
+from recommendation import preprocess_data, hybrid_recommendations, collaborative_recommendations, content_based_recommendations
 
 
 app = Flask(__name__)
@@ -27,6 +27,10 @@ def index():
       return redirect(url_for('home'))
    return render_template('index.html')
 
+@app.route('/test')
+def test():
+   return render_template('test.html')
+
 @app.route('/home')
 def home():
    return render_template('home.html')
@@ -35,34 +39,40 @@ def home():
 def about():
    return render_template('about.html')
 
+# @app.route('/recommend')
+# def recommend():
+   if 'access_token' not in session:
+      return redirect(url_for('login'))
+   
+   if datetime.now().timestamp() > session['expires_at']:
+      return redirect(url_for('refresh_token'))
+   
+   headers = {
+      'Authorization': f"Bearer {session['access_token']}"
+   }
+   response = requests.get(API_BASE_URL + 'me/top/tracks', headers=headers)
+
+   # Print the status code and response content for debugging
+   print("Response Status Code:", response.status_code)
+   print("Response JSON:", response.json())
+
+   response_data = response.json()
+   if 'items' in response_data:
+      user_top_tracks = response_data['items']
+      user_top_track_ids = [track['id'] for track in user_top_tracks]
+
+      recommendations = hybrid_recommendations(user_top_track_ids, dataset)
+      return render_template('recommend.html', recommendations=recommendations)
+   else:
+      return jsonify({"error": "Failed to get top tracks. Please try again later."})
+   
 @app.route('/recommend')
 def recommend():
-    if 'access_token' not in session:
-        return redirect(url_for('login'))
-    
-    if datetime.now().timestamp() > session['expires_at']:
-        return redirect(url_for('refresh_token'))
-    
-    headers = {
-        'Authorization': f"Bearer {session['access_token']}"
-    }
-    response = requests.get(API_BASE_URL + 'me/top/tracks', headers=headers)
+   return render_template('recommend.html')
 
-    # Print the status code and response content for debugging
-    print("Response Status Code:", response.status_code)
-    print("Response JSON:", response.json())
-
-    response_data = response.json()
-    if 'items' in response_data:
-        user_top_tracks = response_data['items']
-        user_top_track_ids = [track['id'] for track in user_top_tracks]
-
-        recommendations = hybrid_recommendations(user_top_track_ids, dataset)
-        return render_template('recommend.html', recommendations=recommendations)
-    else:
-        return jsonify({"error": "Failed to get top tracks. Please try again later."})
-   
-
+@app.route('/metronome')
+def metronome():
+   return render_template('metronome.html')
 
 @app.route('/login')
 def login():
@@ -103,47 +113,20 @@ def callback():
       session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
       # Access token only lasts for 1 day
 
+      # Fetch user profile
       user_profile = requests.get(API_BASE_URL + 'me', headers={'Authorization': f"Bearer {token_info['access_token']}"})
       user_info = user_profile.json()
+
+      # Store additional user profile data in session
       session['user_name'] = user_info['display_name']
+      session['user_id'] = user_info['id']
+      session['user_email'] = user_info['email']
+      session['user_uri'] = user_info['uri']
+      session['user_link'] = user_info['external_urls']['spotify']
+      session['user_image'] = user_info['images'][0]['url'] if user_info.get('images') else None
 
       return redirect(url_for('home'))
    
-'''
-@app.route('/playlists')
-def get_playlists():
-   if 'access_token' not in session:
-      return redirect('/login')
-   
-   # Ensure access token is expired
-   if datetime.now().timestamp() > session['expires_at']:
-      return redirect('/refresh-token')
-   
-   headers = {
-      'Authorization': f"Bearer {session['access_token']}"
-   }
-
-   response = requests.get(API_BASE_URL + 'me/playlists', headers=headers)
-   playlists = response.json()
-
-   return render_template('playlists.html', playlists=playlists['items'])
-
-# To check JSON contents only
-@app.route('/playlists-json')
-def get_playlists_json():
-    if 'access_token' not in session:
-        return redirect('/login')
-    
-    if datetime.now().timestamp() > session['expires_at']:
-        return redirect('/refresh-token')
-    
-    headers = {
-        'Authorization': f"Bearer {session['access_token']}"
-    }
-    response = requests.get(API_BASE_URL + 'me/playlists', headers=headers)
-    playlists = response.json()
-    return jsonify(playlists)
-'''
 
 # Refresh token
 @app.route('/refresh-token')
@@ -182,42 +165,32 @@ def new_user_form():
 
 @app.route('/new_user_recommendations', methods=['POST'])
 def new_user_recommendations():
-    artist1 = request.form['artist1']
-    artist2 = request.form['artist2']
-    artist3 = request.form['artist3']
+   artist1 = request.form['artist1']
+   artist2 = request.form['artist2']
+   artist3 = request.form['artist3']
 
-    if 'access_token' not in session:
-        return redirect(url_for('login'))
-    
-    if datetime.now().timestamp() > session['expires_at']:
-        return redirect(url_for('refresh_token'))
+   if 'access_token' not in session:
+      return redirect(url_for('login'))
+   
+   if datetime.now().timestamp() > session['expires_at']:
+      return redirect(url_for('refresh_token'))
 
-    headers = {
-        'Authorization': f"Bearer {session['access_token']}"
-    }
-    
-    user_top_tracks = get_top_tracks_for_artists([artist1, artist2, artist3])
-    user_top_track_ids = [track['id'] for track in user_top_tracks]
+   headers = {
+      'Authorization': f"Bearer {session['access_token']}"
+   }
+   
+   # Get top tracks for the artists
+   user_top_tracks = get_top_tracks_for_artists([artist1, artist2, artist3])
+   user_top_track_ids = [track['id'] for track in user_top_tracks]
 
-    recommendations = hybrid_recommendations(user_top_track_ids, dataset)
-    return render_template('new_user.html', recommendations=recommendations)
+   # Get content-based recommendations
+   content_recommendations = content_based_recommendations(user_top_track_ids[0], dataset)  # Adjust this based on how you call content-based filtering
 
-    '''
-    # Search for the artists
-    artist_ids = []
-    for artist in [artist1, artist2, artist3]:
-        response = requests.get(API_BASE_URL + f'search?q={artist}&type=artist', headers=headers)
-        result = response.json()
-        if result['artists']['items']:
-            artist_ids.append(result['artists']['items'][0]['id'])
-    
-    # Get recommendations based on artist IDs
-    artist_ids_str = ','.join(artist_ids)
-    response = requests.get(API_BASE_URL + f'recommendations?seed_artists={artist_ids_str}', headers=headers)
-    recommendations = response.json()['tracks']
+   # Convert content recommendations to a list of dictionaries for easier use in the template
+   recommendations_list = content_recommendations[['track_name', 'artists', 'album_name', 'popularity']].to_dict(orient='records')
+   
+   return render_template('new_user.html', recommendations=recommendations_list)
 
-    return render_template('recommendations.html', recommendations=recommendations)
-   '''
     
 def get_top_tracks_for_artists(artists):
    top_tracks = []

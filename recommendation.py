@@ -30,16 +30,24 @@ def preprocess_data(dataset):
 def content_based_recommendations(track_id, dataset, top_n=10):
     # Find the index of the track_id in the dataset
     track_index = dataset.index[dataset['track_id'] == track_id].tolist()
+
+    # Check if the track exists in the dataset
+    if not track_index:  # This checks if track_index is empty
+        print(f"Track with ID {track_id} not found in dataset.")
+        return pd.DataFrame()  # Return empty dataframe if track not found
     
-    # Drop non-feature columns
+    # Get the features of the track (excluding 'track_id', 'artists', etc.)
     feature_columns = dataset.columns.difference(['track_id', 'artists', 'album_name', 'track_name'])
-    track_features = dataset[feature_columns].values
+    track_features = dataset[feature_columns].values  # Ensure this is a 2D array
+
+    # Extract the track's features using the index
+    track_index = track_index[0]  # Get the first index from the list (it's guaranteed to exist now)
     
-    # Compute cosine similarities
+    # Compute cosine similarities (ensure we are passing a 2D array)
     similarities = cosine_similarity([track_features[track_index]], track_features)[0]
     
-    # Get top N similar tracks
-    similar_indices = similarities.argsort()[-top_n-1:-1][::-1]
+    # Get top N similar tracks (excluding the original track)
+    similar_indices = similarities.argsort()[-top_n-1:-1][::-1]  # Exclude the track itself
     
     return dataset.iloc[similar_indices]
 

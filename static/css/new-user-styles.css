@@ -1,0 +1,72 @@
+section {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   height: 100vh;
+   /* background: lightgreen; */
+}
+
+.title {
+   font-size: 2rem;
+   margin: 3rem 0;
+}
+
+.artist-form {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 1.3rem;
+}
+
+.form-group {
+   display: flex;
+   flex-direction: column;
+   text-align: center;
+   max-width: 400px;
+}
+
+label {
+   font-size: 1rem;
+   margin-bottom: 0.3rem;
+}
+
+input[type="text"] {
+   padding: 0.5rem;
+   border: 1px solid #ccc;
+   border-radius: 5px;
+   font-size: 1rem;
+   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+   transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+   outline: none;
+   border-color: #ff6600;
+}
+
+.note {
+   font-size: 0.8rem;
+   color: #666;
+   margin-top: 0.5rem;
+   text-align: center;
+}
+
+.generate-btn {
+   background-color: #FD6A02;
+   color: #fff;
+   border: none;
+   margin-top: 1rem;
+   padding: 20px 50px;
+   border-radius: 50px;
+   font-size: 1.2rem;
+   font-family: 'Montserrat', sans-serif;
+   font-weight: 600;
+   text-decoration: none;
+   cursor: pointer;
+   transition: background-color 0.3s ease;
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.generate-btn:hover {
+   background-color: #FD8835;
+}

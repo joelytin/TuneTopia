@@ -11,26 +11,26 @@
     <form id="artist-form" action="/new_user_recommendations" method="post">
         <div class="form-group">
             <label for="artist1">Artist 1</label>
-            <input type="text" id="artist1" name="artist1" autocomplete="off" oninput="fetchArtistSuggestions('artist1')">
+            <input type="text" id="artist1" name="artist1" autocomplete="off" oninput="fetchArtistSuggestions('artist1'); validateForm()">
             <div id="suggestions1" class="suggestions"></div>
         </div>
     
         <div class="form-group">
             <label for="artist2">Artist 2</label>
-            <input type="text" id="artist2" name="artist2" autocomplete="off" oninput="fetchArtistSuggestions('artist2')">
+            <input type="text" id="artist2" name="artist2" autocomplete="off" oninput="fetchArtistSuggestions('artist2'); validateForm()">
             <div id="suggestions2" class="suggestions"></div>
         </div>
     
         <div class="form-group">
             <label for="artist3">Artist 3</label>
-            <input type="text" id="artist3" name="artist3" autocomplete="off" oninput="fetchArtistSuggestions('artist3')">
+            <input type="text" id="artist3" name="artist3" autocomplete="off" oninput="fetchArtistSuggestions('artist3'); validateForm()">
             <div id="suggestions3" class="suggestions"></div>
         </div>
 
         <p class="note">Recommendations will appear below.</p>
     
         <div class="btn-container">
-            <button type="submit" class="generate-btn">Generate</button>
+            <button type="submit" class="generate-btn" id="generate-btn" disabled>Generate</button>
         </div>
     </form>
 
@@ -93,6 +93,20 @@
             }
         });
     });
+
+    // Validation function to check if all fields are filled
+    function validateForm() {
+        const artist1 = document.getElementById('artist1').value.trim();
+        const artist2 = document.getElementById('artist2').value.trim();
+        const artist3 = document.getElementById('artist3').value.trim();
+        const generateBtn = document.getElementById('generate-btn');
+
+        if (artist1 && artist2 && artist3) {
+            generateBtn.disabled = false;
+        } else {
+            generateBtn.disabled = true;
+        }
+    }
 </script>
 
 

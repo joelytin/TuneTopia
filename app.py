@@ -183,26 +183,23 @@ def search_artists():
     artists = search_result['artists']['items']
 
     matched_artists = []
+    seen_names = set()  # Set to keep track of unique artist names
+    
     for artist in artists:
         artist_name = artist['name']
-        
-        # Primary fuzzy match on normalized artist name
         normalized_name = re.sub(r'\W+', '', artist_name.lower())
         match_score = fuzz.partial_ratio(normalized_query, normalized_name)
-        
-        # Additional matching if the score is low
         if match_score < 80:
             alt_match_score = fuzz.partial_ratio(query.lower(), artist_name.lower())
             match_score = max(match_score, alt_match_score)
         
-        # Keep artists with match score above threshold
-        if match_score >= 80:
+        # Check if the artist name is already seen
+        if match_score >= 80 and artist_name.lower() not in seen_names:
             matched_artists.append((artist, match_score))
+            seen_names.add(artist_name.lower())  # Add artist name to seen set to avoid duplicates
 
-    # Sort by match score only
+    # Sort by match score and limit to top 10 results
     sorted_artists = sorted(matched_artists, key=lambda x: x[1], reverse=True)
-
-    # Limit to top 10 results
     top_artists = [artist[0] for artist in sorted_artists[:10]]
 
     return jsonify([{

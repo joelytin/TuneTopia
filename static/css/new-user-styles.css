@@ -104,3 +104,11 @@ input[type="text"]:focus {
    background-color: #f0f0f0;
 }
 
+/* Styling for the disabled state */
+.generate-btn:disabled {
+   background-color: #ccc; /* Light gray color for the disabled button */
+   color: #666;           /* Darker gray for the text */
+   cursor: not-allowed;   /* Change cursor to indicate non-clickable */
+   opacity: 0.6;          /* Reduce opacity to visually show it's disabled */
+   box-shadow: none;      /* Remove the shadow for a flat look */
+}

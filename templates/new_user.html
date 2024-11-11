@@ -82,6 +82,17 @@
 
         suggestionsDiv.style.display = 'block';
     }
+
+    // Hide the suggestions dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const suggestionsDivs = document.querySelectorAll('.suggestions');
+        suggestionsDivs.forEach(div => {
+            // Check if the click was outside the input and suggestions container
+            if (!div.contains(event.target) && !div.previousElementSibling.contains(event.target)) {
+                div.style.display = 'none';
+            }
+        });
+    });
 </script>
 
 

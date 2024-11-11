@@ -35,13 +35,12 @@
     </form>
 
     {% if recommendations %}
-        <h3>Recommended Tracks</h3>
+        <h2>Your Recommended Tracks</h2>
         <ul>
-            {% for track in recommendations.itertuples() %}
+            {% for track_name, artist_name, album_name, popularity in recommendations %}
                 <li>
-                    <strong>{{ track.track_name }}</strong> by {{ track.artists }}
-                    <br>
-                    Album: {{ track.album_name }} | Popularity: {{ track.popularity }}
+                    <strong>{{ track_name }}</strong> by {{ artist_name }}<br>
+                    Album: {{ album_name }} | Popularity: {{ popularity }}
                 </li>
             {% endfor %}
         </ul>

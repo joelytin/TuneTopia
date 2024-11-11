@@ -1,59 +1,43 @@
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
 import pandas as pd
-import numpy as np
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics.pairwise import cosine_similarity
 
-# Load the dataset
-df = pd.read_csv('https://raw.githubusercontent.com/joelytin/TuneTopia/refs/heads/main/data/huggingface.csv?token=GHSAT0AAAAAACZSWHEIRJNSMMMDX5JF55TYZZOEQDA')
+# Initialize Spotify API client
+CLIENT_ID = 'c4ccf9590da446f591e8d6520db66971'
+CLIENT_SECRET = '945eadb35b8a494b9740c1a64cf55c19'
+sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET))
 
-# Select relevant features
+# Step 1: Function to get audio features for an artist's songs
+def get_artist_audio_features(artist_name):
+    results = sp.search(q='artist:' + artist_name, type='track', limit=50)
+    track_ids = [track['id'] for track in results['tracks']['items']]
+    audio_features = sp.audio_features(track_ids)
+    return pd.DataFrame(audio_features)
+
+# Example artists entered by the user
+artist_names = ['CHUU', 'RESCENE', 'LOONA']
+all_artist_features = pd.concat([get_artist_audio_features(name) for name in artist_names], ignore_index=True)
+
+# Step 2: Calculate the average audio features to form a user preference profile
 features = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness',
             'instrumentalness', 'liveness', 'valence', 'tempo']
-X = df[features]
+user_profile = all_artist_features[features].mean().to_dict()
 
-# Normalize the data
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-
-# Create a DataFrame for the normalized features
-X_normalized = pd.DataFrame(X_scaled, columns=features)
-
-# Function to recommend tracks based on pairwise similarity calculation
-def recommend_similar_tracks(input_track_names, df, X_normalized, top_n=10):
-    recommendations = []
-
-    for track_name in input_track_names:
-        # Find the index of the input track in the dataset
-        try:
-            track_index = df.index[df['track_name'] == track_name].tolist()[0]
-        except IndexError:
-            print(f"Track '{track_name}' not found in the dataset.")
-            continue
-
-        # Get the feature vector of the input track
-        input_vector = X_normalized.iloc[track_index].values.reshape(1, -1)
-
-        # Calculate cosine similarity between the input track and all other tracks
-        similarity_scores = cosine_similarity(input_vector, X_normalized).flatten()
-
-        # Sort by similarity score in descending order and exclude the track itself
-        sorted_indices = np.argsort(-similarity_scores)
-        sorted_indices = [i for i in sorted_indices if i != track_index]
-
-        # Retrieve top N similar tracks
-        top_similar_indices = sorted_indices[:top_n]
-        similar_tracks = df.iloc[top_similar_indices]
-
-        # Add recommendations for each input track
-        recommendations.append(similar_tracks[['track_id', 'track_name', 'artists']])
-
-    # Combine recommendations from all input tracks and drop duplicates
-    final_recommendations = pd.concat(recommendations).drop_duplicates().head(top_n)
-    return final_recommendations
-
-# Example usage with 3 input tracks
-input_track_names = ['Comedy', 'Ghost - Acoustic', 'To Begin Again']
-recommendations = recommend_similar_tracks(input_track_names, df, X_normalized, top_n=10)
+# Step 3: Use Spotify's recommendation endpoint to find similar songs
+recommendations = sp.recommendations(seed_tracks=None,
+                                     limit=10,
+                                     target_danceability=user_profile['danceability'],
+                                     target_energy=user_profile['energy'],
+                                     target_loudness=user_profile['loudness'],
+                                     target_speechiness=user_profile['speechiness'],
+                                     target_acousticness=user_profile['acousticness'],
+                                     target_instrumentalness=user_profile['instrumentalness'],
+                                     target_liveness=user_profile['liveness'],
+                                     target_valence=user_profile['valence'],
+                                     target_tempo=user_profile['tempo'])
 
 # Display recommendations
-print(recommendations)
+recommended_tracks = [(track['name'], track['artists'][0]['name']) for track in recommendations['tracks']]
+print("Recommended Songs:")
+for track in recommended_tracks:
+    print(f"Song: {track[0]}, Artist: {track[1]}")

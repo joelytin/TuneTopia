@@ -1,11 +1,15 @@
 import requests
 import urllib.parse
 import pandas as pd
+import spotipy
+import re
 
 from datetime import datetime, timedelta
 from flask import Flask, redirect, request, jsonify, session, render_template, url_for
-from recommendation import preprocess_data, hybrid_recommendations, collaborative_recommendations, content_based_recommendations
-
+from recommendation import preprocess_data, hybrid_recommendations
+from spotipy.oauth2 import SpotifyClientCredentials
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 
 app = Flask(__name__)
 app.secret_key = '7Yb29#pLw*QfMv!Xt8J3zDk@5eH1Ua%'
@@ -17,6 +21,8 @@ REDIRECT_URI = 'http://localhost:5000/callback'
 AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
 API_BASE_URL = 'https://api.spotify.com/v1/'
+
+sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET))
 
 # Load and preprocess the dataset
 dataset = preprocess_data(pd.read_csv('data/huggingface.csv'))
@@ -163,33 +169,166 @@ def logout():
 def new_user_form():
    return render_template('new_user.html')
 
+@app.route('/search_artists')
+def search_artists():
+    query = request.args.get('query', '')
+    if not query:
+        return jsonify([])
+
+    # Normalize query by removing non-alphanumeric characters
+    normalized_query = re.sub(r'\W+', '', query.lower())
+
+    # Search for artists with a broader scope
+    search_result = sp.search(q=query, type='artist', limit=50)  # Use a general query instead of "artist:query"
+    artists = search_result['artists']['items']
+
+    matched_artists = []
+    for artist in artists:
+        artist_name = artist['name']
+        
+        # Primary fuzzy match on normalized artist name
+        normalized_name = re.sub(r'\W+', '', artist_name.lower())
+        match_score = fuzz.partial_ratio(normalized_query, normalized_name)
+        
+        # Additional matching if the score is low
+        if match_score < 80:
+            alt_match_score = fuzz.partial_ratio(query.lower(), artist_name.lower())
+            match_score = max(match_score, alt_match_score)
+        
+        # Keep artists with match score above threshold
+        if match_score >= 80:
+            matched_artists.append((artist, match_score))
+
+    # Sort by match score only
+    sorted_artists = sorted(matched_artists, key=lambda x: x[1], reverse=True)
+
+    # Limit to top 10 results
+    top_artists = [artist[0] for artist in sorted_artists[:10]]
+
+    return jsonify([{
+        'name': artist['name'],
+        'id': artist['id'],
+        'popularity': artist['popularity']
+    } for artist in top_artists])
+
 @app.route('/new_user_recommendations', methods=['POST'])
 def new_user_recommendations():
-   artist1 = request.form['artist1']
-   artist2 = request.form['artist2']
-   artist3 = request.form['artist3']
+   artist1 = request.form.get('artist1')
+   artist2 = request.form.get('artist2')
+   artist3 = request.form.get('artist3')
 
-   if 'access_token' not in session:
-      return redirect(url_for('login'))
+   artist_data = []
+   for artist_name in [artist1, artist2, artist3]:
+      try:
+         search_result = sp.search(f'artist:"{artist_name}"', type='artist', limit=5)  # Increased limit for more results
+         if search_result['artists']['items']:
+            print(f"Search results for artist '{artist_name}':", search_result['artists']['items'])  # Debugging line
+
+            # Check for exact name match to avoid similar-sounding results
+            exact_match_found = False
+            for item in search_result['artists']['items']:
+               print(f"Checking artist name: {item['name']} (input: {artist_name})")  # Debugging line
+               if item['name'].lower() == artist_name.lower():  # Compare lowercase to handle case insensitivity
+                  artist_info = item
+                  artist_data.append({
+                     'name': artist_info['name'],
+                     'id': artist_info['id'],
+                     'genres': artist_info['genres'],
+                     'popularity': artist_info['popularity'],
+                     'uri': artist_info['uri'],
+                     'type': artist_info['type']
+                  })
+                  exact_match_found = True
+                  break
+
+            if not exact_match_found:
+               return jsonify({"error": f"No exact match found for artist '{artist_name}'."})
+
+         else:
+            return jsonify({"error": f"Artist '{artist_name}' not found."})
+
+      except Exception as e:
+         return jsonify({"error": f"Error searching for artist '{artist_name}': {str(e)}"})
+
    
-   if datetime.now().timestamp() > session['expires_at']:
-      return redirect(url_for('refresh_token'))
-
-   headers = {
-      'Authorization': f"Bearer {session['access_token']}"
-   }
+   print("Artist Data Retrieved:", artist_data)
    
-   # Get top tracks for the artists
-   user_top_tracks = get_top_tracks_for_artists([artist1, artist2, artist3])
-   user_top_track_ids = [track['id'] for track in user_top_tracks]
+   track_data = []
+   track_ids = []
+   for artist in artist_data:
+      try:
+         top_tracks_response = sp.artist_top_tracks(artist['id'], country='US')
+         top_tracks = top_tracks_response['tracks']
 
-   # Get content-based recommendations
-   content_recommendations = content_based_recommendations(user_top_track_ids[0], dataset)  # Adjust this based on how you call content-based filtering
-
-   # Convert content recommendations to a list of dictionaries for easier use in the template
-   recommendations_list = content_recommendations[['track_name', 'artists', 'album_name', 'popularity']].to_dict(orient='records')
+         # Extract relevant track details
+         for track in top_tracks:
+            track_data.append({
+               'artist_name': artist['name'],
+               'track_name': track['name'],
+               'album_name': track['album']['name'],
+               'track_id': track['id'],
+               'popularity': track['popularity'],
+            })
+            track_ids.append(track['id'])
+      except Exception as e:
+         return jsonify({"error": f"Error fetching top tracks for artist '{artist['name']}': {str(e)}"})
    
-   return render_template('new_user.html', recommendations=recommendations_list)
+   print("Track Data Retrieved:", track_data)
+   
+   audio_features_data = []
+   try:
+      audio_features_response = sp.audio_features(track_ids)
+      for features in audio_features_response:
+         if features: # Ensure features are available
+            audio_features_data.append({
+               'track_id': features['id'],
+               'danceability': features['danceability'],
+               'energy': features['energy'],
+               'key': features['key'],
+               'loudness': features['loudness'],
+               'mode': features['mode'],
+               'speechiness': features['speechiness'],
+               'acousticness': features['acousticness'],
+               'instrumentalness': features['instrumentalness'],
+               'liveness': features['liveness'],
+               'valence': features['valence'],
+               'tempo': features['tempo'],
+               'time_signature': features['time_signature'],
+            })
+   except Exception as e:
+      return jsonify({"error": f"Error fetching audio features for tracks: {str(e)}"})
+   
+   # print("Audio Features Retrieved:", audio_features_data)
+   # return jsonify({"artist_data": artist_data, "track_data": track_data, "audio_features_data": audio_features_data})
+
+   # Combine track data and audio features by track ID
+   for track in track_data:
+      for features in audio_features_data:
+         if track['track_id'] == features['track_id']:
+               track.update(features)
+
+   print("Track Data with Audio Features:", track_data)
+   return jsonify(track_data)  # Temporary for testing purposes
+   
+   # artist1 = request.form['artist1']
+   # artist2 = request.form['artist2']
+   # artist3 = request.form['artist3']
+
+   # if 'access_token' not in session:
+   #    return redirect(url_for('login'))
+   
+   # if datetime.now().timestamp() > session['expires_at']:
+   #    return redirect(url_for('refresh_token'))
+
+   # headers = {
+   #    'Authorization': f"Bearer {session['access_token']}"
+   # }
+   
+   # user_top_tracks = get_top_tracks_for_artists([artist1, artist2, artist3])
+   # user_top_track_ids = [track['id'] for track in user_top_tracks]
+
+   # recommendations = hybrid_recommendations(user_top_track_ids, dataset)
+   # return render_template('new_user.html', recommendations=recommendations)
 
     
 def get_top_tracks_for_artists(artists):

@@ -171,37 +171,45 @@ def new_user_form():
 
 @app.route('/search_artists')
 def search_artists():
-   query = request.args.get('query', '')
-   if not query:
-      return jsonify([])
+    query = request.args.get('query', '')
+    if not query:
+        return jsonify([])
 
-   # Search for artists on Spotify
-   search_result = sp.search(q=f'artist:{query}', type='artist', limit=20)
-   artists = search_result['artists']['items']
+    # Normalize query by removing non-alphanumeric characters
+    normalized_query = re.sub(r'\W+', '', query.lower())
 
-   # Apply fuzzy matching to filter out irrelevant results
-   matched_artists = []
-   for artist in artists:
-      # Calculate the match score between the input query and the artist name
-      match_score = fuzz.partial_ratio(query.lower(), artist['name'].lower())
-      if match_score >= 80:  # Threshold for relevance; adjust as needed
-         matched_artists.append((artist, match_score))
+    # Search for artists with a broader scope
+    search_result = sp.search(q=query, type='artist', limit=50)  # Use a general query instead of "artist:query"
+    artists = search_result['artists']['items']
 
-   # Sort by match score (relevance) and popularity
-   sorted_artists = sorted(
-      matched_artists,
-      key=lambda x: (x[1], x[0]['popularity']),  # Sort by match score, then by popularity
-      reverse=True
-   )
+    matched_artists = []
+    for artist in artists:
+        artist_name = artist['name']
+        
+        # Primary fuzzy match on normalized artist name
+        normalized_name = re.sub(r'\W+', '', artist_name.lower())
+        match_score = fuzz.partial_ratio(normalized_query, normalized_name)
+        
+        # Additional matching if the score is low
+        if match_score < 80:
+            alt_match_score = fuzz.partial_ratio(query.lower(), artist_name.lower())
+            match_score = max(match_score, alt_match_score)
+        
+        # Keep artists with match score above threshold
+        if match_score >= 80:
+            matched_artists.append((artist, match_score))
 
-   # Limit results to top 10
-   top_artists = [artist[0] for artist in sorted_artists[:10]]
+    # Sort by match score only
+    sorted_artists = sorted(matched_artists, key=lambda x: x[1], reverse=True)
 
-   return jsonify([{
-      'name': artist['name'],
-      'id': artist['id'],
-      'popularity': artist['popularity']
-   } for artist in top_artists])
+    # Limit to top 10 results
+    top_artists = [artist[0] for artist in sorted_artists[:10]]
+
+    return jsonify([{
+        'name': artist['name'],
+        'id': artist['id'],
+        'popularity': artist['popularity']
+    } for artist in top_artists])
 
 @app.route('/new_user_recommendations', methods=['POST'])
 def new_user_recommendations():

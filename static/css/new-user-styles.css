@@ -70,3 +70,22 @@ input[type="text"]:focus {
 .generate-btn:hover {
    background-color: #FD8835;
 }
+
+.suggestions {
+   position: absolute;
+   border: 1px solid #ccc;
+   background-color: #fff;
+   max-height: 200px;
+   overflow-y: auto;
+   display: none; /* Hidden by default */
+}
+
+.suggestions div {
+   padding: 8px;
+   cursor: pointer;
+}
+
+.suggestions div:hover {
+   background-color: #f0f0f0;
+}
+

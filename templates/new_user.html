@@ -8,25 +8,30 @@
 <section>
     <h2 class="title">Enter 3 of your favourite artists.</h2>
 
-    <form action="/new_user_recommendations" method="post" class="artist-form">
+    <form id="artist-form" action="/new_user_recommendations" method="post">
         <div class="form-group">
             <label for="artist1">Artist 1</label>
-            <input type="text" id="artist1" name="artist1" required>
+            <input type="text" id="artist1" name="artist1" autocomplete="off" oninput="fetchArtistSuggestions('artist1')">
+            <div id="suggestions1" class="suggestions"></div>
         </div>
+    
         <div class="form-group">
             <label for="artist2">Artist 2</label>
-            <input type="text" id="artist2" name="artist2" required>
+            <input type="text" id="artist2" name="artist2" autocomplete="off" oninput="fetchArtistSuggestions('artist2')">
+            <div id="suggestions2" class="suggestions"></div>
         </div>
+    
         <div class="form-group">
             <label for="artist3">Artist 3</label>
-            <input type="text" id="artist3" name="artist3" required>
+            <input type="text" id="artist3" name="artist3" autocomplete="off" oninput="fetchArtistSuggestions('artist3')">
+            <div id="suggestions3" class="suggestions"></div>
         </div>
-        
+
         <p class="note">Recommendations will appear below.</p>
-
-        <button type="submit" class="generate-btn">Generate</button>
-
-        <!-- Button to clear fields? -->
+    
+        <div class="btn-container">
+            <button type="submit" class="generate-btn">Generate</button>
+        </div>
     </form>
 
     {% if recommendations %}
@@ -42,6 +47,42 @@
         </ul>
     {% endif %}
 </section>
+
+<script>
+    async function fetchArtistSuggestions(inputId) {
+        const input = document.getElementById(inputId);
+        const suggestionsDiv = document.getElementById(`suggestions${inputId.slice(-1)}`);
+        const query = input.value;
+
+        if (query.length < 2) {
+            suggestionsDiv.style.display = 'none';
+            return;
+        }
+
+        // Fetch suggestions from your backend API route, sorting by popularity
+        const response = await fetch(`/search_artists?query=${query}`);
+        const artists = await response.json();
+
+        // Sort artists by popularity (assuming each artist has a 'popularity' property)
+        artists.sort((a, b) => b.popularity - a.popularity);
+
+        // Clear current suggestions
+        suggestionsDiv.innerHTML = '';
+
+        // Add sorted suggestions to the dropdown
+        artists.forEach(artist => {
+            const suggestion = document.createElement('div');
+            suggestion.textContent = artist.name;
+            suggestion.onclick = () => {
+                input.value = artist.name;
+                suggestionsDiv.style.display = 'none';
+            };
+            suggestionsDiv.appendChild(suggestion);
+        });
+
+        suggestionsDiv.style.display = 'block';
+    }
+</script>
 
 
 {% endblock %}

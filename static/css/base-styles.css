@@ -145,6 +145,7 @@ nav a {
    z-index: 1;
    /* Ensure the content starts below the header */
    margin-top: 5rem; /* Adjust this value to match the height of your nav */
+   margin-bottom: 5rem;
    /* Set a min-height to make all content areas uniform */
    min-height: calc(100vh - 10rem); /* 18rem = 5rem (nav) + 13rem (footer) */
 }

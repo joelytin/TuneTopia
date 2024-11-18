@@ -112,3 +112,7 @@ input[type="text"]:focus {
    opacity: 0.6;          /* Reduce opacity to visually show it's disabled */
    box-shadow: none;      /* Remove the shadow for a flat look */
 }
+
+.recommendation-title {
+   margin: 5rem 0 1rem;
+}

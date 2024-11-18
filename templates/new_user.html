@@ -36,17 +36,19 @@
 
     {% if recommendations %}
     <h2 class="recommendation-title">Your Recommended Tracks</h2>
-    <ul>
-        {% for track in recommendations %}
-            <li>
-                <strong>{{ track.track_name }}</strong> by {{ track.artists }}<br>
-                Album: {{ track.album_name }} | Popularity: {{ track.popularity }}
-                {% if track.preview_url %}
-                    <br><a href="{{ track.preview_url }}" target="_blank">Preview Track</a>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
+    <div class="recommendation-container">
+        <ul>
+            {% for track in recommendations %}
+                <li>
+                    <strong>{{ track.track_name }}</strong> by {{ track.artists }}<br>
+                    Album: {{ track.album_name }} | Popularity: {{ track.popularity }}
+                    {% if track.preview_url %}
+                        <br><a href="{{ track.preview_url }}" target="_blank">Preview Track</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
     {% endif %}
 
 </section>

@@ -2,7 +2,8 @@ section {
    display: flex;
    flex-direction: column;
    align-items: center;
-   height: 100vh;
+   /* height: 100vh; */
+   height: auto;
    /* background: lightgreen; */
 }
 
@@ -115,4 +116,12 @@ input[type="text"]:focus {
 
 .recommendation-title {
    margin: 5rem 0 1rem;
+}
+
+.recommendation-container {
+   background: lightblue;
+   margin: 1rem 0;
+   padding: 1rem;
+   border-radius: 5px;
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }

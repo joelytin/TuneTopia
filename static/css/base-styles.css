@@ -145,6 +145,7 @@ nav a {
 /* Footer */
 footer {
    background-color: #1D3446;
+   position: relative;
    color: #fff;
    padding: 20px;
    text-align: center;

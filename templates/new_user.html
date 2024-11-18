@@ -35,16 +35,20 @@
     </form>
 
     {% if recommendations %}
-        <h2>Your Recommended Tracks</h2>
-        <ul>
-            {% for track_name, artist_name, album_name, popularity in recommendations %}
-                <li>
-                    <strong>{{ track_name }}</strong> by {{ artist_name }}<br>
-                    Album: {{ album_name }} | Popularity: {{ popularity }}
-                </li>
-            {% endfor %}
-        </ul>
+    <h2>Your Recommended Tracks</h2>
+    <ul>
+        {% for track in recommendations %}
+            <li>
+                <strong>{{ track.track_name }}</strong> by {{ track.artists }}<br>
+                Album: {{ track.album_name }} | Popularity: {{ track.popularity }}
+                {% if track.preview_url %}
+                    <br><a href="{{ track.preview_url }}" target="_blank">Preview Track</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
     {% endif %}
+
 </section>
 
 <script>

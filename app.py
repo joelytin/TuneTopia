@@ -7,7 +7,7 @@ import re
 from datetime import datetime, timedelta
 from flask import Flask, redirect, request, jsonify, session, render_template, url_for
 from recommendation import preprocess_data, hybrid_recommendations
-from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 
@@ -136,7 +136,7 @@ def callback():
 @app.route('/refresh-token')
 def refresh_token():
    # Check if refresh token is NOT in the session, redirect to login
-   if 'refresh-token' not in session:
+   if 'refresh_token' not in session:
       return redirect(url_for('login'))
    
    # If access token is expired, make a request to get a fresh one
@@ -208,79 +208,100 @@ def search_artists():
 def clamp(value, min_value, max_value):
     return max(min(value, max_value), min_value)
 
-@app.route('/new_user_recommendations', methods=['POST'])
-def new_user_recommendations():
-   # Get artist names from the form
-   artist1 = request.form.get('artist1')
-   artist2 = request.form.get('artist2')
-   artist3 = request.form.get('artist3')
-   artist_names = [artist1, artist2, artist3]
+# @app.route('/new_user_recommendations', methods=['POST'])
+# def new_user_recommendations():
+   # if 'access_token' not in session:
+   #    return jsonify({"error": "Please log in to use this feature"})
 
-   audio_features_data = []
+   # headers = {
+   #    'Authorization': f"Bearer {session['access_token']}"
+   # }
 
-   # Step 1: Collect audio features from top tracks for each artist
-   for artist_name in artist_names:
-      try:
-         # Fetch artist's Spotify ID
-         search_result = sp.search(f'artist:"{artist_name}"', type='artist', limit=1)
-         if search_result['artists']['items']:
-               artist_info = search_result['artists']['items'][0]
-               top_tracks = sp.artist_top_tracks(artist_info['id'], country='US')['tracks']
-               track_ids = [track['id'] for track in top_tracks]
+   # # Get artist names from the form
+   # artist1 = request.form.get('artist1')
+   # artist2 = request.form.get('artist2')
+   # artist3 = request.form.get('artist3')
+   # artist_names = [artist1, artist2, artist3]
 
-               # Fetch audio features for these tracks
-               audio_features = sp.audio_features(track_ids)
-               audio_features_data.extend([feat for feat in audio_features if feat])
-      except Exception as e:
-         return jsonify({"error": f"Error processing artist '{artist_name}': {str(e)}"})
+   # audio_features_data = []
 
-   if not audio_features_data:
-      return jsonify({"error": "No audio features found for the input artists."})
+   # # Step 1: Collect audio features from top tracks for each artist
+   # for artist_name in artist_names:
+   #    try:
+   #       # Fetch artist's Spotify ID
+   #       search_result = sp.search(f'artist:"{artist_name}"', type='artist', limit=1)
+   #       if search_result['artists']['items']:
+   #             artist_info = search_result['artists']['items'][0]
+   #             top_tracks = sp.artist_top_tracks(artist_info['id'], country='US')['tracks']
+   #             track_ids = [track['id'] for track in top_tracks]
 
-   # Step 2: Average the audio features
-   features = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness',
-               'instrumentalness', 'liveness', 'valence', 'tempo']
-   user_profile = pd.DataFrame(audio_features_data)[features].mean().to_dict()
+   #             # Fetch audio features for these tracks
+   #             audio_features = sp.audio_features(track_ids)
+   #             audio_features_data.extend([feat for feat in audio_features if feat])
+   #    except Exception as e:
+   #       return jsonify({"error": f"Error processing artist '{artist_name}': {str(e)}"})
 
-   # Step 3: Clamp values to ensure they fall within Spotify's acceptable ranges
-   user_profile['danceability'] = clamp(user_profile['danceability'], 0.0, 1.0)
-   user_profile['energy'] = clamp(user_profile['energy'], 0.0, 1.0)
-   user_profile['loudness'] = clamp(user_profile['loudness'], -60.0, 0.0)
-   user_profile['speechiness'] = clamp(user_profile['speechiness'], 0.0, 1.0)
-   user_profile['acousticness'] = clamp(user_profile['acousticness'], 0.0, 1.0)
-   user_profile['instrumentalness'] = clamp(user_profile['instrumentalness'], 0.0, 1.0)
-   user_profile['liveness'] = clamp(user_profile['liveness'], 0.0, 1.0)
-   user_profile['valence'] = clamp(user_profile['valence'], 0.0, 1.0)
-   user_profile['tempo'] = clamp(user_profile['tempo'], 0.0, 250.0)
+   # if not audio_features_data:
+   #    return jsonify({"error": "No audio features found for the input artists."})
 
-   # Step 4: Request Spotify recommendations based on the averaged audio features
-   try:
-      recommendations = sp.recommendations(
-         limit=10,
-         target_danceability=user_profile['danceability'],
-         target_energy=user_profile['energy'],
-         target_loudness=user_profile['loudness'],
-         target_speechiness=user_profile['speechiness'],
-         target_acousticness=user_profile['acousticness'],
-         target_instrumentalness=user_profile['instrumentalness'],
-         target_liveness=user_profile['liveness'],
-         target_valence=user_profile['valence'],
-         target_tempo=user_profile['tempo']
-      )
+   # # Step 2: Average the audio features
+   # features = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness',
+   #             'instrumentalness', 'liveness', 'valence', 'tempo']
+   # user_profile = pd.DataFrame(audio_features_data)[features].mean().to_dict()
 
-      # Step 5: Prepare recommendations for display
-      recommended_tracks = [{
-         'track_name': track['name'],
-         'artists': ', '.join(artist['name'] for artist in track['artists']),
-         'album_name': track['album']['name'],
-         'popularity': track['popularity'],
-         'preview_url': track['preview_url']
-      } for track in recommendations['tracks']]
+   # # Step 3: Clamp values to ensure they fall within Spotify's acceptable ranges
+   # user_profile['danceability'] = clamp(user_profile['danceability'], 0.0, 1.0)
+   # user_profile['energy'] = clamp(user_profile['energy'], 0.0, 1.0)
+   # user_profile['loudness'] = clamp(user_profile['loudness'], -60.0, 0.0)
+   # user_profile['speechiness'] = clamp(user_profile['speechiness'], 0.0, 1.0)
+   # user_profile['acousticness'] = clamp(user_profile['acousticness'], 0.0, 1.0)
+   # user_profile['instrumentalness'] = clamp(user_profile['instrumentalness'], 0.0, 1.0)
+   # user_profile['liveness'] = clamp(user_profile['liveness'], 0.0, 1.0)
+   # user_profile['valence'] = clamp(user_profile['valence'], 0.0, 1.0)
+   # user_profile['tempo'] = clamp(user_profile['tempo'], 0.0, 250.0)
 
-      return render_template('new_user.html', recommendations=recommended_tracks)
+   # # Step 4: Request Spotify recommendations based on the averaged audio features
+   # try:
+   #    artist_names = [artist1, artist2, artist3]
 
-   except Exception as e:
-      return jsonify({"error": f"Error fetching recommendations: {str(e)}"})
+   #    seed_artist_ids = []
+   #    for name in artist_names:
+   #       results = sp.search(q='artist:' + name, type='artist', limit=1)
+   #       if results['artists']['items']:
+   #          artist_id = results['artists']['items'][0]['id']
+   #          seed_artist_ids.append(artist_id)
+   #       else:
+   #          return jsonify({"error": f"No artist found for name: {name}"})
+      
+   #    # Print seed_artist_ids to verify the contents before making the API request
+   #    print("Seed Artist IDs:", seed_artist_ids)  # This will output the IDs to the console
+      
+   #    recommendations = sp.recommendations(
+   #       limit=10,
+   #       target_danceability=user_profile['danceability'],
+   #       target_energy=user_profile['energy'],
+   #       target_loudness=user_profile['loudness'],
+   #       target_speechiness=user_profile['speechiness'],
+   #       target_acousticness=user_profile['acousticness'],
+   #       target_instrumentalness=user_profile['instrumentalness'],
+   #       target_liveness=user_profile['liveness'],
+   #       target_valence=user_profile['valence'],
+   #       target_tempo=user_profile['tempo']
+   #    )
+
+   #    # Step 5: Prepare recommendations for display
+   #    recommended_tracks = [{
+   #       'track_name': track['name'],
+   #       'artists': ', '.join(artist['name'] for artist in track['artists']),
+   #       'album_name': track['album']['name'],
+   #       'popularity': track['popularity'],
+   #       'preview_url': track['preview_url']
+   #    } for track in recommendations['tracks']]
+
+   #    return render_template('new_user.html', recommendations=recommended_tracks)
+
+   # except Exception as e:
+   #    return jsonify({"error": f"Error fetching recommendations: {str(e)}"})
 
    
    # artist1 = request.form['artist1']
@@ -302,6 +323,69 @@ def new_user_recommendations():
 
    # recommendations = hybrid_recommendations(user_top_track_ids, dataset)
    # return render_template('new_user.html', recommendations=recommendations)
+
+@app.route('/new_user_recommendations', methods=['POST'])
+def new_user_recommendations():
+   # Ensure the user is logged in
+   if 'access_token' not in session:
+      return jsonify({"error": "Please log in to use this feature"}), 401
+
+   # Retrieve artist names from the form
+   artist_names = [request.form.get(f'artist{i}') for i in range(1, 4)]
+
+   # Validate and fetch artist IDs
+   seed_artists = []
+   for artist_name in artist_names:
+      if not artist_name:
+         return jsonify({"error": f"Missing artist name for input {artist_names.index(artist_name) + 1}"}), 400
+      
+      search_result = sp.search(f'artist:"{artist_name}"', type='artist', limit=1)
+      if search_result['artists']['items']:
+         seed_artists.append(search_result['artists']['items'][0]['id'])
+      else:
+         return jsonify({"error": f"Artist '{artist_name}' not found"}), 404
+
+   # Validate that we have enough artists
+   if len(seed_artists) < 1:
+      return jsonify({"error": "No valid artists found for recommendations"}), 400
+
+   # Construct the API request
+   headers = {
+      'Authorization': f"Bearer {session['access_token']}"
+   }
+   params = {
+      'seed_artists': ','.join(seed_artists),
+      'limit': 10
+   }
+   # Add dynamic target features as needed, e.g., tempo, danceability
+   # params['target_tempo'] = 120
+
+   url = f'https://api.spotify.com/v1/recommendations?{urllib.parse.urlencode(params)}'
+
+   try:
+      response = requests.get(url, headers=headers)
+      response.raise_for_status()
+      recommendations = response.json()
+
+      # Process recommendations
+      recommended_tracks = [
+         {
+               'track_name': track['name'],
+               'artists': ', '.join(artist['name'] for artist in track['artists']),
+               'album_name': track['album']['name'],
+               'popularity': track['popularity'],
+               'preview_url': track['preview_url']
+         }
+         for track in recommendations.get('tracks', [])
+      ]
+
+      if not recommended_tracks:
+         return jsonify({"error": "No recommendations found. Try with different artists"}), 404
+
+      return render_template('new_user.html', recommendations=recommended_tracks)
+
+   except requests.exceptions.RequestException as e:
+      return jsonify({"error": f"Error fetching recommendations: {str(e)}"}), 500
 
     
 def get_top_tracks_for_artists(artists):

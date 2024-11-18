@@ -8,6 +8,13 @@ body, html {
    overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
+.site {
+   min-height: 100vh;
+   display: grid;
+   grid-template-rows: auto 1fr auto;
+   grid-template-columns: minmax(0, 1fr);
+}
+
 h1, h2, h3 {
    font-family: 'Staatliches', sans-serif;
 }

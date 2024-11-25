@@ -34,22 +34,35 @@
         </div>
     </form>
 
-    {% if recommendations %}
+    {% if recommendations and recommendation_features %}
     <h2 class="recommendation-title">Your Recommended Tracks</h2>
     <div class="recommendation-container">
-        <ul>
-            {% for track in recommendations %}
-                <li>
-                    <strong>{{ track.track_name }}</strong> by {{ track.artists }}<br>
-                    Album: {{ track.album_name }} | Popularity: {{ track.popularity }}
-                    {% if track.preview_url %}
-                        <br><a href="{{ track.preview_url }}" target="_blank">Preview Track</a>
-                    {% endif %}
-                </li>
+        <div class="track-cards">
+            {% for track, feature in zip(recommendations, recommendation_features) %}
+                <div class="track-card">
+                    <div class="track-card-header">
+                        <strong>{{ track.track_name }}</strong> by {{ track.artists }}
+                    </div>
+                    <div class="track-card-body">
+                        <p><strong>Album:</strong> {{ track.album_name }}</p>
+                        <p><strong>Popularity:</strong> {{ track.popularity }}</p>
+                        <p><strong>Genres:</strong> {{ track.genres | join(', ') }}</p>
+                        {% if track.preview_url %}
+                            <p><a href="{{ track.preview_url }}" target="_blank" class="preview-link">Preview Track</a></p>
+                        {% endif %}
+                    </div>
+                    <div class="track-card-footer">
+                        <p><strong>Tempo (BPM):</strong> {{ feature.tempo }}, <strong>Key:</strong> {{ feature.key }}</p>
+                        <p><strong>Energy:</strong> {{ feature.energy | round(2) }}, <strong>Danceability:</strong> {{ feature.danceability | round(2) }}, <strong>Valence:</strong> {{ feature.valence | round(2) }}</p>
+                    </div>
+                </div>
             {% endfor %}
-        </ul>
+        </div>
     </div>
+    {% else %}
+    <p>No recommendations found. Please try again.</p>
     {% endif %}
+
 
 </section>
 

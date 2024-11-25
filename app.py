@@ -10,8 +10,12 @@ from recommendation import preprocess_data, hybrid_recommendations
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
+from sklearn.metrics.pairwise import cosine_similarity
+from scipy.spatial.distance import euclidean
+import numpy as np
 
 app = Flask(__name__)
+app.jinja_env.globals.update(zip=zip)
 app.secret_key = '7Yb29#pLw*QfMv!Xt8J3zDk@5eH1Ua%'
 
 CLIENT_ID = 'c4ccf9590da446f591e8d6520db66971'
@@ -333,15 +337,34 @@ def new_user_recommendations():
    # Retrieve artist names from the form
    artist_names = [request.form.get(f'artist{i}') for i in range(1, 4)]
 
+   # Key mapping for human-readable keys
+   key_mapping = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
    # Validate and fetch artist IDs
    seed_artists = []
+   input_audio_features = []
    for artist_name in artist_names:
       if not artist_name:
          return jsonify({"error": f"Missing artist name for input {artist_names.index(artist_name) + 1}"}), 400
       
       search_result = sp.search(f'artist:"{artist_name}"', type='artist', limit=1)
       if search_result['artists']['items']:
-         seed_artists.append(search_result['artists']['items'][0]['id'])
+         artist_id = search_result['artists']['items'][0]['id']
+         seed_artists.append(artist_id)
+
+         # Fetch top tracks and audio features for the artist
+         top_tracks = sp.artist_top_tracks(artist_id)['tracks']
+         track_ids = [track['id'] for track in top_tracks]
+         audio_features = sp.audio_features(track_ids)
+
+         # Average the features for visualization
+         normalized_features = {
+               'tempo': np.mean([feat['tempo'] for feat in audio_features if feat]),
+               'energy': np.mean([feat['energy'] for feat in audio_features if feat]),
+               'danceability': np.mean([feat['danceability'] for feat in audio_features if feat]),
+               'valence': np.mean([feat['valence'] for feat in audio_features if feat])
+         }
+         input_audio_features.append(normalized_features)
       else:
          return jsonify({"error": f"Artist '{artist_name}' not found"}), 404
 
@@ -355,7 +378,7 @@ def new_user_recommendations():
    }
    params = {
       'seed_artists': ','.join(seed_artists),
-      'limit': 10
+      'limit': 20
    }
    # Add dynamic target features as needed, e.g., tempo, danceability
    # params['target_tempo'] = 120
@@ -368,21 +391,50 @@ def new_user_recommendations():
       recommendations = response.json()
 
       # Process recommendations
-      recommended_tracks = [
+      recommended_tracks = []
+      for track in recommendations.get('tracks', []):
+         # Fetch the genres for each artist in the track
+         track_genres = []
+         for artist in track['artists']:
+            artist_id = artist['id']
+            artist_info = sp.artist(artist_id)
+            artist_genres = artist_info.get('genres', [])
+            track_genres.extend(artist_genres)
+
+         recommended_tracks.append({
+            'track_name': track['name'],
+            'artists': ', '.join(artist['name'] for artist in track['artists']),
+            'album_name': track['album']['name'],
+            'popularity': track['popularity'],
+            'preview_url': track['preview_url'],
+            'genres': track_genres,  # Add genres to the track
+            'id': track.get('id')
+         })
+
+      # Fetch audio features for recommended tracks
+      recommendation_ids = [track['id'] for track in recommended_tracks if track['id']]
+      rec_audio_features = sp.audio_features(recommendation_ids)
+      recommended_audio_features = [
          {
-               'track_name': track['name'],
-               'artists': ', '.join(artist['name'] for artist in track['artists']),
-               'album_name': track['album']['name'],
-               'popularity': track['popularity'],
-               'preview_url': track['preview_url']
+            'tempo': round(feat['tempo']),
+            'key': key_mapping[feat['key']],
+            'energy': feat['energy'],
+            'danceability': feat['danceability'],
+            'valence': feat['valence']
          }
-         for track in recommendations.get('tracks', [])
+         for feat in rec_audio_features if feat
       ]
 
       if not recommended_tracks:
          return jsonify({"error": "No recommendations found. Try with different artists"}), 404
 
-      return render_template('new_user.html', recommendations=recommended_tracks)
+      # Render the template
+      return render_template(
+         'new_user.html',
+         recommendations=recommended_tracks,
+         input_features=input_audio_features,
+         recommendation_features=recommended_audio_features
+      )
 
    except requests.exceptions.RequestException as e:
       return jsonify({"error": f"Error fetching recommendations: {str(e)}"}), 500

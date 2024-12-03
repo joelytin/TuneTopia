@@ -18,8 +18,8 @@ app = Flask(__name__)
 app.jinja_env.globals.update(zip=zip)
 app.secret_key = '7Yb29#pLw*QfMv!Xt8J3zDk@5eH1Ua%'
 
-CLIENT_ID = 'c4ccf9590da446f591e8d6520db66971'
-CLIENT_SECRET = '945eadb35b8a494b9740c1a64cf55c19'
+CLIENT_ID = 'a1190d1d8dc44cc1a72e9cd795c11e4c'
+CLIENT_SECRET = '3829a4cc7c0b4e20b6867402eae7d690'
 REDIRECT_URI = 'http://localhost:5000/callback'
 
 AUTH_URL = 'https://accounts.spotify.com/authorize'

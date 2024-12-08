@@ -1,8 +1,11 @@
+import json
 import requests
 import urllib.parse
 import pandas as pd
 import spotipy
 import re
+import http.client
+import urllib
 
 from datetime import datetime, timedelta
 from flask import Flask, redirect, request, jsonify, session, render_template, url_for
@@ -351,20 +354,35 @@ def new_user_recommendations():
       if search_result['artists']['items']:
          artist_id = search_result['artists']['items'][0]['id']
          seed_artists.append(artist_id)
+         print('Artist ID: ',artist_id)
 
          # Fetch top tracks and audio features for the artist
          top_tracks = sp.artist_top_tracks(artist_id)['tracks']
          track_ids = [track['id'] for track in top_tracks]
-         audio_features = sp.audio_features(track_ids)
+         # track_ids = track_ids[:1] # limit to 1 track ID
+         # audio_features = sp.audio_features(track_ids) 
+         # Fetch audio features from Soundlens API
+         audio_features = []
+         conn = http.client.HTTPSConnection("soundlens.pro")
+         headers = { 'Accept': "application/json" }
+         for track_id in track_ids:
+            conn.request("GET", f"/api/spotify-replacement/audio-features/{track_id}", headers=headers)
+            res = conn.getresponse()
+            if res.status == 200:
+               feature_data = json.loads(res.read())
+               audio_features.append(feature_data)
+         
+         print('AUDIO FEATURES: ')
+         print(audio_features)
 
          # Average the features for visualization
-         normalized_features = {
-               'tempo': np.mean([feat['tempo'] for feat in audio_features if feat]),
-               'energy': np.mean([feat['energy'] for feat in audio_features if feat]),
-               'danceability': np.mean([feat['danceability'] for feat in audio_features if feat]),
-               'valence': np.mean([feat['valence'] for feat in audio_features if feat])
-         }
-         input_audio_features.append(normalized_features)
+         # normalized_features = {
+         #    'tempo': np.mean([feat['tempo'] for feat in audio_features if feat]),
+         #    'energy': np.mean([feat['energy'] for feat in audio_features if feat]),
+         #    'danceability': np.mean([feat['danceability'] for feat in audio_features if feat]),
+         #    'valence': np.mean([feat['valence'] for feat in audio_features if feat])
+         # }
+         # input_audio_features.append(normalized_features)
       else:
          return jsonify({"error": f"Artist '{artist_name}' not found"}), 404
 
@@ -373,22 +391,35 @@ def new_user_recommendations():
       return jsonify({"error": "No valid artists found for recommendations"}), 400
 
    # Construct the API request
-   headers = {
-      'Authorization': f"Bearer {session['access_token']}"
-   }
+   # headers = {
+   #    'Authorization': f"Bearer {session['access_token']}"
+   # }
    params = {
       'seed_artists': ','.join(seed_artists),
-      'limit': 20
+      'limit': 10
    }
+   # print(params)
    # Add dynamic target features as needed, e.g., tempo, danceability
    # params['target_tempo'] = 120
 
-   url = f'https://api.spotify.com/v1/recommendations?{urllib.parse.urlencode(params)}'
+   # url = f'https://api.spotify.com/v1/recommendations?{urllib.parse.urlencode(params)}'
+   # Make the request to the Soundlens API
+   # conn = http.client.HTTPSConnection("soundlens.pro")
+   # headers = { 'Accept': "application/json" }
+   query_string = urllib.parse.urlencode(params)
+   conn.request("GET", f"/api/spotify-replacement/recommendations?{query_string}", headers=headers)
+   # url = f"https://soundlens.pro/api/spotify-replacement/recommendations?{query_string}"
 
    try:
-      response = requests.get(url, headers=headers)
-      response.raise_for_status()
-      recommendations = response.json()
+      # response = requests.get(url, headers=headers)
+      # response.raise_for_status()
+      # recommendations = response.json()
+
+      res = conn.getresponse()
+      if res.status == 200:
+         recommendations = json.loads(res.read())
+      else:
+         return jsonify({"error": "Error fetching recommendations from Soundlens API"}), 500
 
       # Process recommendations
       recommended_tracks = []
@@ -413,17 +444,24 @@ def new_user_recommendations():
 
       # Fetch audio features for recommended tracks
       recommendation_ids = [track['id'] for track in recommended_tracks if track['id']]
-      rec_audio_features = sp.audio_features(recommendation_ids)
-      recommended_audio_features = [
-         {
-            'tempo': round(feat['tempo']),
-            'key': key_mapping[feat['key']],
-            'energy': feat['energy'],
-            'danceability': feat['danceability'],
-            'valence': feat['valence']
-         }
-         for feat in rec_audio_features if feat
-      ]
+      rec_audio_features = []
+      for track_id in recommendation_ids:
+         conn.request("GET", f"/api/spotify-replacement/audio-features/{track_id}", headers=headers)
+         res = conn.getresponse()
+         if res.status == 200:
+            rec_audio_features.append(json.loads(res.read()))
+            
+      print('REC AUDIO FEATURES: ', rec_audio_features)
+      # recommended_audio_features = [
+      #    {
+      #       'tempo': round(feat['tempo']),
+      #       'key': key_mapping[feat['key']],
+      #       'energy': feat['energy'],
+      #       'danceability': feat['danceability'],
+      #       'valence': feat['valence']
+      #    }
+      #    for feat in rec_audio_features if feat
+      # ]
 
       if not recommended_tracks:
          return jsonify({"error": "No recommendations found. Try with different artists"}), 404
@@ -432,8 +470,8 @@ def new_user_recommendations():
       return render_template(
          'new_user.html',
          recommendations=recommended_tracks,
-         input_features=input_audio_features,
-         recommendation_features=recommended_audio_features
+         # input_features=input_audio_features,
+         # recommendation_features=recommended_audio_features
       )
 
    except requests.exceptions.RequestException as e:

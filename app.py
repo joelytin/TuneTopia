@@ -265,10 +265,107 @@ def search_artists():
       'popularity': artist['popularity']
    } for artist in top_artists])
 
-def clamp(value, min_value, max_value):
-    return max(min(value, max_value), min_value)
 
-@app.route('/new_user', methods=['POST'])
+
+# Create a dictionary to store the feature data for each song
+song_features = []
+
+# Process the dataset and store song features
+for _, row in dataset.iterrows():
+   song = {
+      'track_name': row['track_name'],
+      'artists': row['artists'],
+      'track_genre': row['track_genre'],
+      'tempo': row['tempo'],
+      'energy': row['energy'],
+      'danceability': row['danceability'],
+      'valence': row['valence'],
+      'popularity': row['popularity']
+   }
+   song_features.append(song)
+
+
+def generate_user_profile(input_artists):
+   user_profile = {
+         'track_genre': [],
+         'tempo': 0,
+         'energy': 0,
+         'danceability': 0,
+         'valence': 0
+   }
+
+   # Iterate over each artist and extract their features
+   for artist in input_artists:
+      # Find all songs by the artist in the dataset
+      artist_songs = dataset[dataset['artists'].str.contains(artist, case=False, na=False)]
+
+      # Aggregate the features (average values for each feature)
+      for _, song in artist_songs.iterrows():
+            user_profile['track_genre'].extend(song['track_genre'])  # Assuming genres are comma-separated
+            user_profile['tempo'] += song['tempo']
+            user_profile['energy'] += song['energy']
+            user_profile['danceability'] += song['danceability']
+            user_profile['valence'] += song['valence']
+
+      # Compute the average values for tempo, energy, danceability, and valence
+      num_songs = len(artist_songs)
+      user_profile['tempo'] /= num_songs
+      user_profile['energy'] /= num_songs
+      user_profile['danceability'] /= num_songs
+      user_profile['valence'] /= num_songs            
+
+      # Remove duplicate genres from user profile
+      user_profile['track_genre'] = list(set(user_profile['track_genre']))
+
+      return user_profile
+
+def song_to_vector(song):
+   # Combine genres (binary vector, presence/absence of genres)
+   all_genres = ['acoustic' 'afrobeat' 'alt-rock' 'alternative' 'ambient' 'anime'
+               'black-metal' 'bluegrass' 'blues' 'brazil' 'breakbeat' 'british'
+               'cantopop' 'chicago-house' 'children' 'chill' 'classical' 'club' 'comedy'
+               'country' 'dance' 'dancehall' 'death-metal' 'deep-house' 'detroit-techno'
+               'disco' 'disney' 'drum-and-bass' 'dub' 'dubstep' 'edm' 'electro'
+               'electronic' 'emo' 'folk' 'forro' 'french' 'funk' 'garage' 'german'
+               'gospel' 'goth' 'grindcore' 'groove' 'grunge' 'guitar' 'happy'
+               'hard-rock' 'hardcore' 'hardstyle' 'heavy-metal' 'hip-hop' 'honky-tonk'
+               'house' 'idm' 'indian' 'indie-pop' 'indie' 'industrial' 'iranian'
+               'j-dance' 'j-idol' 'j-pop' 'j-rock' 'jazz' 'k-pop' 'kids' 'latin'
+               'latino' 'malay' 'mandopop' 'metal' 'metalcore' 'minimal-techno' 'mpb'
+               'new-age' 'opera' 'pagode' 'party' 'piano' 'pop-film' 'pop' 'power-pop'
+               'progressive-house' 'psych-rock' 'punk-rock' 'punk' 'r-n-b' 'reggae'
+               'reggaeton' 'rock-n-roll' 'rock' 'rockabilly' 'romance' 'sad' 'salsa'
+               'samba' 'sertanejo' 'show-tunes' 'singer-songwriter' 'ska' 'sleep'
+               'songwriter' 'soul' 'spanish' 'study' 'swedish' 'synth-pop' 'tango'
+               'techno' 'trance' 'trip-hop' 'turkish' 'world-music']
+   genre_vector = [1 if genre in song['track_genre'] else 0 for genre in all_genres]
+
+   # Create a vector with the remaining features
+   features = [song['tempo'], song['energy'], song['danceability'], song['valence']]
+   
+   # Combine genre vector with numerical features
+   return np.array(genre_vector + features) 
+
+def get_recommended_songs(user_profile):
+   # Convert user profile to a vector
+   user_profile_vector = song_to_vector(user_profile)
+
+   # Convert all songs in the dataset to vectors
+   song_vectors = np.array([song_to_vector(song) for song in song_features])
+
+   # Compute cosine similarity between user profile and each song in the dataset
+   similarities = cosine_similarity(user_profile_vector.reshape(1, -1), song_vectors)
+
+   # Sort the songs by similarity (highest first)
+   sorted_similarities = similarities[0].argsort()[::-1]
+   
+   # Get the top N recommended songs (e.g., top 10)
+   top_n = 10
+   recommended_songs = [song_features[i] for i in sorted_similarities[:top_n]]
+   
+   return recommended_songs
+
+@app.route('/new_user_recommendations', methods=['POST'])
 def new_user():
    # Ensure the user is logged in
    if 'access_token' not in session:
@@ -277,22 +374,23 @@ def new_user():
    artist1 = request.form.get('artist1')
    artist2 = request.form.get('artist2')
    artist3 = request.form.get('artist3')
-   selected_artists = [artist1, artist2, artist3]
 
-   # Filter dataset for the selected artists
-   filtered_tracks = dataset[dataset['artists'].isin(selected_artists)]
+   input_artists = [artist1, artist2, artist3]
 
-   # Generate recommendations based on custom criteria
-   recommendations = filtered_tracks.nlargest(10, ['danceability', 'energy'])
-   recommendation_features = recommendations[['tempo', 'key', 'energy', 'danceability', 'valence']]
+   user_profile = generate_user_profile(input_artists) # Generate user profile from the input artists
+   
+   recommended_songs = get_recommended_songs(user_profile) # Get recommendations based on the user profile
+   
+   return render_template('new_user.html', recommendations=recommended_songs)
 
-   return render_template(
-      'new_user.html',
-      recommendations=recommendations.to_dict(orient='records'),
-      recommendation_features=recommendation_features.to_dict(orient='records')
-   )
+   
 
-    
+
+
+
+
+
+
 def get_top_tracks_for_artists(artists):
    if 'access_token' not in session or datetime.now().timestamp() > session.get('expires_at', 0):
       # Redirect to refresh token if expired or missing

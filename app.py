@@ -284,7 +284,7 @@ for _, row in dataset.iterrows():
       'danceability': row['danceability'],
       'valence': row['valence'],
       'popularity': row['popularity'],
-      'key': row['key']
+      'key': map_key_to_pitch(row['key'])
    }
    song_features.append(song)
 
@@ -390,6 +390,32 @@ def new_user():
    print('RECOMMENDED SONGS:', recommended_songs)
    
    return render_template('new_user.html', recommendations=recommended_songs)
+
+def map_key_to_pitch(key):
+   key_mapping = {
+      -1: "No key detected",
+      0: "C",
+      1: "C♯/D♭",
+      2: "D",
+      3: "D♯/E♭",
+      4: "E",
+      5: "F",
+      6: "F♯/G♭",
+      7: "G",
+      8: "G♯/A♭",
+      9: "A",
+      10: "A♯/B♭",
+      11: "B"
+   }
+   
+   return key_mapping.get(key, "Invalid key")
+
+
+
+
+
+
+
 
    
 def calculate_average_features(songs):

@@ -39,6 +39,13 @@
             {% for song in recommendations %}
                 <li>
                     <strong>{{ song['track_name'] }}</strong> by {{ song['artists'] }} (Popularity: {{ song['popularity'] }})
+                    <br> Key: {{ song['key'] }}
+                    <br> Genre: {{ song['track_genre'] }}
+                    <br> Tempo: {{ song['tempo'] }}
+                    <br> Energy: {{ song['energy'] }}
+                    <br> Danceability: {{ song['danceability'] }}
+                    <br> Valence: {{ song['valence'] }}
+                    <br> Similarity to your artists: {{ "{:.2f}".format(song['similarity_score']) }}%
                 </li>
             {% endfor %}
         </ul>

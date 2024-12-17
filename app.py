@@ -3,6 +3,9 @@ import urllib.parse
 import pandas as pd
 import spotipy
 import re
+import numpy as np
+import io
+import base64
 
 from datetime import datetime, timedelta
 from flask import Flask, redirect, request, jsonify, session, render_template, url_for
@@ -13,7 +16,7 @@ from fuzzywuzzy import process
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MinMaxScaler
 from scipy.spatial.distance import euclidean
-import numpy as np
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 app = Flask(__name__)
 app.jinja_env.globals.update(zip=zip)
@@ -84,30 +87,30 @@ def about():
 
 # @app.route('/recommend')
 # def recommend():
-   if 'access_token' not in session:
-      return redirect(url_for('login'))
+   # if 'access_token' not in session:
+   #    return redirect(url_for('login'))
    
-   if datetime.now().timestamp() > session['expires_at']:
-      return redirect(url_for('refresh_token'))
+   # if datetime.now().timestamp() > session['expires_at']:
+   #    return redirect(url_for('refresh_token'))
    
-   headers = {
-      'Authorization': f"Bearer {session['access_token']}"
-   }
-   response = requests.get(API_BASE_URL + 'me/top/tracks', headers=headers)
+   # headers = {
+   #    'Authorization': f"Bearer {session['access_token']}"
+   # }
+   # response = requests.get(API_BASE_URL + 'me/top/tracks', headers=headers)
 
-   # Print the status code and response content for debugging
-   print("Response Status Code:", response.status_code)
-   print("Response JSON:", response.json())
+   # # Print the status code and response content for debugging
+   # print("Response Status Code:", response.status_code)
+   # print("Response JSON:", response.json())
 
-   response_data = response.json()
-   if 'items' in response_data:
-      user_top_tracks = response_data['items']
-      user_top_track_ids = [track['id'] for track in user_top_tracks]
+   # response_data = response.json()
+   # if 'items' in response_data:
+   #    user_top_tracks = response_data['items']
+   #    user_top_track_ids = [track['id'] for track in user_top_tracks]
 
-      recommendations = hybrid_recommendations(user_top_track_ids, dataset)
-      return render_template('recommend.html', recommendations=recommendations)
-   else:
-      return jsonify({"error": "Failed to get top tracks. Please try again later."})
+   #    recommendations = hybrid_recommendations(user_top_track_ids, dataset)
+   #    return render_template('recommend.html', recommendations=recommendations)
+   # else:
+   #    return jsonify({"error": "Failed to get top tracks. Please try again later."})
    
 @app.route('/recommend')
 def recommend():
@@ -228,42 +231,42 @@ def search_artists():
    return jsonify(sorted_artists[:10])
 
 # def search_artists():
-   query = request.args.get('query', '')
-   if not query:
-      return jsonify([])
+   # query = request.args.get('query', '')
+   # if not query:
+   #    return jsonify([])
 
-   # Normalize query by removing non-alphanumeric characters
-   normalized_query = re.sub(r'\W+', '', query.lower())
+   # # Normalize query by removing non-alphanumeric characters
+   # normalized_query = re.sub(r'\W+', '', query.lower())
 
-   # Search for artists with a broader scope
-   search_result = sp.search(q=query, type='artist', limit=50)  # Use a general query instead of "artist:query"
-   artists = search_result['artists']['items']
+   # # Search for artists with a broader scope
+   # search_result = sp.search(q=query, type='artist', limit=50)  # Use a general query instead of "artist:query"
+   # artists = search_result['artists']['items']
 
-   matched_artists = []
-   seen_names = set()  # Set to keep track of unique artist names
+   # matched_artists = []
+   # seen_names = set()  # Set to keep track of unique artist names
    
-   for artist in artists:
-      artist_name = artist['name']
-      normalized_name = re.sub(r'\W+', '', artist_name.lower())
-      match_score = fuzz.partial_ratio(normalized_query, normalized_name)
-      if match_score < 80:
-         alt_match_score = fuzz.partial_ratio(query.lower(), artist_name.lower())
-         match_score = max(match_score, alt_match_score)
+   # for artist in artists:
+   #    artist_name = artist['name']
+   #    normalized_name = re.sub(r'\W+', '', artist_name.lower())
+   #    match_score = fuzz.partial_ratio(normalized_query, normalized_name)
+   #    if match_score < 80:
+   #       alt_match_score = fuzz.partial_ratio(query.lower(), artist_name.lower())
+   #       match_score = max(match_score, alt_match_score)
       
-      # Check if the artist name is already seen
-      if match_score >= 80 and artist_name.lower() not in seen_names:
-         matched_artists.append((artist, match_score))
-         seen_names.add(artist_name.lower())  # Add artist name to seen set to avoid duplicates
+   #    # Check if the artist name is already seen
+   #    if match_score >= 80 and artist_name.lower() not in seen_names:
+   #       matched_artists.append((artist, match_score))
+   #       seen_names.add(artist_name.lower())  # Add artist name to seen set to avoid duplicates
 
-   # Sort by match score and limit to top 10 results
-   sorted_artists = sorted(matched_artists, key=lambda x: x[1], reverse=True)
-   top_artists = [artist[0] for artist in sorted_artists[:10]]
+   # # Sort by match score and limit to top 10 results
+   # sorted_artists = sorted(matched_artists, key=lambda x: x[1], reverse=True)
+   # top_artists = [artist[0] for artist in sorted_artists[:10]]
 
-   return jsonify([{
-      'name': artist['name'],
-      'id': artist['id'],
-      'popularity': artist['popularity']
-   } for artist in top_artists])
+   # return jsonify([{
+   #    'name': artist['name'],
+   #    'id': artist['id'],
+   #    'popularity': artist['popularity']
+   # } for artist in top_artists])
 
 
 
@@ -280,18 +283,19 @@ for _, row in dataset.iterrows():
       'energy': row['energy'],
       'danceability': row['danceability'],
       'valence': row['valence'],
-      'popularity': row['popularity']
+      'popularity': row['popularity'],
+      'key': row['key']
    }
    song_features.append(song)
 
 
 def generate_user_profile(input_artists):
    user_profile = {
-         'track_genre': [],
-         'tempo': 0,
-         'energy': 0,
-         'danceability': 0,
-         'valence': 0
+      'track_genre': [],
+      'tempo': 0,
+      'energy': 0,
+      'danceability': 0,
+      'valence': 0
    }
 
    # Iterate over each artist and extract their features
@@ -301,11 +305,11 @@ def generate_user_profile(input_artists):
 
       # Aggregate the features (average values for each feature)
       for _, song in artist_songs.iterrows():
-            user_profile['track_genre'].extend(song['track_genre'])  # Assuming genres are comma-separated
-            user_profile['tempo'] += song['tempo']
-            user_profile['energy'] += song['energy']
-            user_profile['danceability'] += song['danceability']
-            user_profile['valence'] += song['valence']
+         user_profile['track_genre'].extend(song['track_genre'])  # Assuming genres are comma-separated
+         user_profile['tempo'] += song['tempo']
+         user_profile['energy'] += song['energy']
+         user_profile['danceability'] += song['danceability']
+         user_profile['valence'] += song['valence']
 
       # Compute the average values for tempo, energy, danceability, and valence
       num_songs = len(artist_songs)
@@ -321,23 +325,23 @@ def generate_user_profile(input_artists):
 
 def song_to_vector(song):
    # Combine genres (binary vector, presence/absence of genres)
-   all_genres = ['acoustic' 'afrobeat' 'alt-rock' 'alternative' 'ambient' 'anime'
-               'black-metal' 'bluegrass' 'blues' 'brazil' 'breakbeat' 'british'
-               'cantopop' 'chicago-house' 'children' 'chill' 'classical' 'club' 'comedy'
-               'country' 'dance' 'dancehall' 'death-metal' 'deep-house' 'detroit-techno'
-               'disco' 'disney' 'drum-and-bass' 'dub' 'dubstep' 'edm' 'electro'
-               'electronic' 'emo' 'folk' 'forro' 'french' 'funk' 'garage' 'german'
-               'gospel' 'goth' 'grindcore' 'groove' 'grunge' 'guitar' 'happy'
-               'hard-rock' 'hardcore' 'hardstyle' 'heavy-metal' 'hip-hop' 'honky-tonk'
-               'house' 'idm' 'indian' 'indie-pop' 'indie' 'industrial' 'iranian'
-               'j-dance' 'j-idol' 'j-pop' 'j-rock' 'jazz' 'k-pop' 'kids' 'latin'
-               'latino' 'malay' 'mandopop' 'metal' 'metalcore' 'minimal-techno' 'mpb'
-               'new-age' 'opera' 'pagode' 'party' 'piano' 'pop-film' 'pop' 'power-pop'
-               'progressive-house' 'psych-rock' 'punk-rock' 'punk' 'r-n-b' 'reggae'
-               'reggaeton' 'rock-n-roll' 'rock' 'rockabilly' 'romance' 'sad' 'salsa'
-               'samba' 'sertanejo' 'show-tunes' 'singer-songwriter' 'ska' 'sleep'
-               'songwriter' 'soul' 'spanish' 'study' 'swedish' 'synth-pop' 'tango'
-               'techno' 'trance' 'trip-hop' 'turkish' 'world-music']
+   all_genres = ['acoustic', 'afrobeat', 'alt-rock', 'alternative', 'ambient', 'anime',
+               'black-metal', 'bluegrass', 'blues', 'brazil', 'breakbeat', 'british',
+               'cantopop', 'chicago-house', 'children', 'chill', 'classical', 'club', 'comedy',
+               'country', 'dance', 'dancehall', 'death-metal', 'deep-house', 'detroit-techno',
+               'disco', 'disney', 'drum-and-bass', 'dub', 'dubstep', 'edm', 'electro',
+               'electronic', 'emo', 'folk', 'forro', 'french', 'funk', 'garage', 'german',
+               'gospel', 'goth', 'grindcore', 'groove', 'grunge', 'guitar', 'happy',
+               'hard-rock', 'hardcore', 'hardstyle', 'heavy-metal', 'hip-hop', 'honky-tonk',
+               'house', 'idm', 'indian', 'indie-pop', 'indie', 'industrial', 'iranian',
+               'j-dance', 'j-idol', 'j-pop', 'j-rock', 'jazz', 'k-pop', 'kids', 'latin',
+               'latino', 'malay', 'mandopop', 'metal', 'metalcore', 'minimal-techno', 'mpb',
+               'new-age', 'opera', 'pagode', 'party', 'piano', 'pop-film', 'pop', 'power-pop',
+               'progressive-house', 'psych-rock', 'punk-rock', 'punk', 'r-n-b', 'reggae',
+               'reggaeton', 'rock-n-roll', 'rock', 'rockabilly', 'romance', 'sad', 'salsa',
+               'samba', 'sertanejo', 'show-tunes', 'singer-songwriter', 'ska', 'sleep',
+               'songwriter', 'soul', 'spanish', 'study', 'swedish', 'synth-pop', 'tango',
+               'techno', 'trance', 'trip-hop', 'turkish', 'world-music']
    genre_vector = [1 if genre in song['track_genre'] else 0 for genre in all_genres]
 
    # Create a vector with the remaining features
@@ -362,6 +366,10 @@ def get_recommended_songs(user_profile):
    # Get the top N recommended songs (e.g., top 10)
    top_n = 10
    recommended_songs = [song_features[i] for i in sorted_similarities[:top_n]]
+
+   # Add similarity score to each song's data for display
+   for i, song in enumerate(recommended_songs):
+      song['similarity_score'] = similarities[0][sorted_similarities[i]] * 100  # Convert to percentage
    
    return recommended_songs
 
@@ -376,19 +384,95 @@ def new_user():
    artist3 = request.form.get('artist3')
 
    input_artists = [artist1, artist2, artist3]
-
    user_profile = generate_user_profile(input_artists) # Generate user profile from the input artists
-   
+   print('USER PROFILE:', user_profile)
    recommended_songs = get_recommended_songs(user_profile) # Get recommendations based on the user profile
+   print('RECOMMENDED SONGS:', recommended_songs)
    
    return render_template('new_user.html', recommendations=recommended_songs)
 
    
+def calculate_average_features(songs):
+   average_features = {
+      'tempo': 0,
+      'energy': 0,
+      'danceability': 0,
+      'valence': 0
+   }
+   
+   for song in songs: # Sum up all features
+      average_features['tempo'] += song['tempo']
+      average_features['energy'] += song['energy']
+      average_features['danceability'] += song['danceability']
+      average_features['valence'] += song['valence']
+
+   for key in average_features: # Compute average for each feature
+      average_features[key] /= len(songs)
+
+   return average_features
 
 
+def calculate_similarity(features1, features2):
+   # Convert feature dictionaries into vectors
+   vector1 = np.array([features1['tempo'], features1['energy'], features1['danceability'], features1['valence']])
+   vector2 = np.array([features2['tempo'], features2['energy'], features2['danceability'], features2['valence']])
+   
+   # Normalize the vectors
+   vector1 = vector1 / np.linalg.norm(vector1)
+   vector2 = vector2 / np.linalg.norm(vector2)
+   
+   # Compute cosine similarity
+   similarity = np.dot(vector1, vector2)
+   return similarity
 
 
+def plot_radar_chart_image(artist_features, recommended_features):
+   categories = ['tempo', 'energy', 'danceability', 'valence']
+   num_categories = len(categories)
 
+   artist_values = [artist_features[feature] for feature in categories]
+   recommended_values = [recommended_features[feature] for feature in categories]
+
+   artist_values += artist_values[:1]
+   recommended_values += recommended_values[:1]
+   
+   angles = np.linspace(0, 2 * np.pi, num_categories, endpoint=False).tolist()
+   angles += angles[:1]
+
+   fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+   ax.fill(angles, artist_values, color='blue', alpha=0.25, label='Input Artists')
+   ax.fill(angles, recommended_values, color='red', alpha=0.25, label='Recommended Songs')
+   ax.set_yticks([])
+   ax.set_xticks(angles[:-1])
+   ax.set_xticklabels(categories)
+   ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.1))
+
+   canvas = FigureCanvas(fig)
+   img = io.BytesIO()
+   canvas.print_png(img)
+   img.seek(0)
+   img_data = base64.b64encode(img.read()).decode('utf-8')
+
+   return img_data
+
+
+def compare_statistics(input_artists, recommended_songs):
+   # Get all songs for the input artists
+   artist_songs = []
+   for artist in input_artists:
+      artist_songs.extend(dataset[dataset['artists'].str.contains(artist, case=False, na=False)].to_dict('records'))
+   
+   # Calculate average features for input artists and recommended songs
+   artist_features = calculate_average_features(artist_songs)
+   recommended_features = calculate_average_features(recommended_songs)
+   
+   # Calculate similarity
+   similarity_score = calculate_similarity(artist_features, recommended_features)
+   
+   # Plot radar chart
+   plot_radar_chart(artist_features, recommended_features, title=f"Feature Similarity: {similarity_score:.2f}")
+   
+   return similarity_score
 
 
 def get_top_tracks_for_artists(artists):

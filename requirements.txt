@@ -1,0 +1,9 @@
+requests
+urllib3
+pandas
+spotipy
+flask
+fuzzywuzzy
+scikit-learn
+scipy
+numpy

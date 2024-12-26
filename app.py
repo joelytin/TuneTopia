@@ -268,7 +268,24 @@ def search_artists():
    #    'popularity': artist['popularity']
    # } for artist in top_artists])
 
-
+def map_key_to_pitch(key):
+   key_mapping = {
+      -1: "No key detected",
+      0: "C",
+      1: "C♯/D♭",
+      2: "D",
+      3: "D♯/E♭",
+      4: "E",
+      5: "F",
+      6: "F♯/G♭",
+      7: "G",
+      8: "G♯/A♭",
+      9: "A",
+      10: "A♯/B♭",
+      11: "B"
+   }
+   
+   return key_mapping.get(key, "Invalid key")
 
 # Create a dictionary to store the feature data for each song
 song_features = []
@@ -391,24 +408,7 @@ def new_user():
    
    return render_template('new_user.html', recommendations=recommended_songs)
 
-def map_key_to_pitch(key):
-   key_mapping = {
-      -1: "No key detected",
-      0: "C",
-      1: "C♯/D♭",
-      2: "D",
-      3: "D♯/E♭",
-      4: "E",
-      5: "F",
-      6: "F♯/G♭",
-      7: "G",
-      8: "G♯/A♭",
-      9: "A",
-      10: "A♯/B♭",
-      11: "B"
-   }
-   
-   return key_mapping.get(key, "Invalid key")
+
 
 
 

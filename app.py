@@ -14,7 +14,7 @@ from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from scipy.spatial.distance import euclidean
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
@@ -268,200 +268,253 @@ def search_artists():
    #    'popularity': artist['popularity']
    # } for artist in top_artists])
 
-def map_key_to_pitch(key):
-   key_mapping = {
-      -1: "No key detected",
-      0: "C",
-      1: "C♯/D♭",
-      2: "D",
-      3: "D♯/E♭",
-      4: "E",
-      5: "F",
-      6: "F♯/G♭",
-      7: "G",
-      8: "G♯/A♭",
-      9: "A",
-      10: "A♯/B♭",
-      11: "B"
-   }
+# def map_key_to_pitch(key):
+#    key_mapping = {
+#       -1: "No key detected",
+#       0: "C",
+#       1: "C♯/D♭",
+#       2: "D",
+#       3: "D♯/E♭",
+#       4: "E",
+#       5: "F",
+#       6: "F♯/G♭",
+#       7: "G",
+#       8: "G♯/A♭",
+#       9: "A",
+#       10: "A♯/B♭",
+#       11: "B"
+#    }
    
-   return key_mapping.get(key, "Invalid key")
+#    return key_mapping.get(key, "Invalid key")
 
 # Create a dictionary to store the feature data for each song
-song_features = []
+# song_features = []
 
 # Process the dataset and store song features
-for _, row in dataset.iterrows():
-   song = {
-      'track_name': row['track_name'],
-      'artists': row['artists'],
-      'track_genre': row['track_genre'],
-      'tempo': row['tempo'],
-      'energy': row['energy'],
-      'danceability': row['danceability'],
-      'valence': row['valence'],
-      'popularity': row['popularity'],
-      'key': map_key_to_pitch(row['key'])
-   }
-   song_features.append(song)
+# for _, row in dataset.iterrows():
+#    song = {
+#       'track_name': row['track_name'],
+#       'artists': row['artists'],
+#       'track_genre': row['track_genre'],
+#       'tempo': row['tempo'],
+#       'energy': row['energy'],
+#       'danceability': row['danceability'],
+#       'valence': row['valence'],
+#       'popularity': row['popularity'],
+#       'key': map_key_to_pitch(row['key'])
+#    }
+#    song_features.append(song)
 
 
-def generate_user_profile(input_artists):
-   user_profile = {
-      'track_genre': [],
-      'tempo': 0,
-      'energy': 0,
-      'danceability': 0,
-      'valence': 0
-   }
+# def generate_user_profile(input_artists):
+#    user_profile = {
+#       'track_genre': [],
+#       'tempo': 0,
+#       'energy': 0,
+#       'danceability': 0,
+#       'valence': 0
+#    }
 
-   # Iterate over each artist and extract their features
-   for artist in input_artists:
-      # Find all songs by the artist in the dataset
-      artist_songs = dataset[dataset['artists'].str.contains(artist, case=False, na=False)]
+#    # Iterate over each artist and extract their features
+#    for artist in input_artists:
+#       # Find all songs by the artist in the dataset
+#       artist_songs = dataset[dataset['artists'].str.contains(artist, case=False, na=False)]
 
-      # Aggregate the features (average values for each feature)
-      for _, song in artist_songs.iterrows():
-         user_profile['track_genre'].extend(song['track_genre'])  # Assuming genres are comma-separated
-         user_profile['tempo'] += song['tempo']
-         user_profile['energy'] += song['energy']
-         user_profile['danceability'] += song['danceability']
-         user_profile['valence'] += song['valence']
+#       # Aggregate the features (average values for each feature)
+#       for _, song in artist_songs.iterrows():
+#          user_profile['track_genre'].extend(song['track_genre'])  # Assuming genres are comma-separated
+#          user_profile['tempo'] += song['tempo']
+#          user_profile['energy'] += song['energy']
+#          user_profile['danceability'] += song['danceability']
+#          user_profile['valence'] += song['valence']
 
-      # Compute the average values for tempo, energy, danceability, and valence
-      num_songs = len(artist_songs)
-      user_profile['tempo'] /= num_songs
-      user_profile['energy'] /= num_songs
-      user_profile['danceability'] /= num_songs
-      user_profile['valence'] /= num_songs            
+#       # Compute the average values for tempo, energy, danceability, and valence
+#       num_songs = len(artist_songs)
+#       user_profile['tempo'] /= num_songs
+#       user_profile['energy'] /= num_songs
+#       user_profile['danceability'] /= num_songs
+#       user_profile['valence'] /= num_songs            
 
-      # Remove duplicate genres from user profile
-      user_profile['track_genre'] = list(set(user_profile['track_genre']))
+#       # Remove duplicate genres from user profile
+#       user_profile['track_genre'] = list(set(user_profile['track_genre']))
 
-      return user_profile
+#       return user_profile
 
-def song_to_vector(song):
-   # Combine genres (binary vector, presence/absence of genres)
-   all_genres = ['acoustic', 'afrobeat', 'alt-rock', 'alternative', 'ambient', 'anime',
-               'black-metal', 'bluegrass', 'blues', 'brazil', 'breakbeat', 'british',
-               'cantopop', 'chicago-house', 'children', 'chill', 'classical', 'club', 'comedy',
-               'country', 'dance', 'dancehall', 'death-metal', 'deep-house', 'detroit-techno',
-               'disco', 'disney', 'drum-and-bass', 'dub', 'dubstep', 'edm', 'electro',
-               'electronic', 'emo', 'folk', 'forro', 'french', 'funk', 'garage', 'german',
-               'gospel', 'goth', 'grindcore', 'groove', 'grunge', 'guitar', 'happy',
-               'hard-rock', 'hardcore', 'hardstyle', 'heavy-metal', 'hip-hop', 'honky-tonk',
-               'house', 'idm', 'indian', 'indie-pop', 'indie', 'industrial', 'iranian',
-               'j-dance', 'j-idol', 'j-pop', 'j-rock', 'jazz', 'k-pop', 'kids', 'latin',
-               'latino', 'malay', 'mandopop', 'metal', 'metalcore', 'minimal-techno', 'mpb',
-               'new-age', 'opera', 'pagode', 'party', 'piano', 'pop-film', 'pop', 'power-pop',
-               'progressive-house', 'psych-rock', 'punk-rock', 'punk', 'r-n-b', 'reggae',
-               'reggaeton', 'rock-n-roll', 'rock', 'rockabilly', 'romance', 'sad', 'salsa',
-               'samba', 'sertanejo', 'show-tunes', 'singer-songwriter', 'ska', 'sleep',
-               'songwriter', 'soul', 'spanish', 'study', 'swedish', 'synth-pop', 'tango',
-               'techno', 'trance', 'trip-hop', 'turkish', 'world-music']
-   # genre_vector = [1 if genre in song['track_genre'] else 0 for genre in all_genres]
-   genre_vector = [1 if genre in song.get('track_genre', []) else 0 for genre in all_genres]
+# def song_to_vector(song):
+#    # Combine genres (binary vector, presence/absence of genres)
+#    all_genres = ['acoustic', 'afrobeat', 'alt-rock', 'alternative', 'ambient', 'anime',
+#                'black-metal', 'bluegrass', 'blues', 'brazil', 'breakbeat', 'british',
+#                'cantopop', 'chicago-house', 'children', 'chill', 'classical', 'club', 'comedy',
+#                'country', 'dance', 'dancehall', 'death-metal', 'deep-house', 'detroit-techno',
+#                'disco', 'disney', 'drum-and-bass', 'dub', 'dubstep', 'edm', 'electro',
+#                'electronic', 'emo', 'folk', 'forro', 'french', 'funk', 'garage', 'german',
+#                'gospel', 'goth', 'grindcore', 'groove', 'grunge', 'guitar', 'happy',
+#                'hard-rock', 'hardcore', 'hardstyle', 'heavy-metal', 'hip-hop', 'honky-tonk',
+#                'house', 'idm', 'indian', 'indie-pop', 'indie', 'industrial', 'iranian',
+#                'j-dance', 'j-idol', 'j-pop', 'j-rock', 'jazz', 'k-pop', 'kids', 'latin',
+#                'latino', 'malay', 'mandopop', 'metal', 'metalcore', 'minimal-techno', 'mpb',
+#                'new-age', 'opera', 'pagode', 'party', 'piano', 'pop-film', 'pop', 'power-pop',
+#                'progressive-house', 'psych-rock', 'punk-rock', 'punk', 'r-n-b', 'reggae',
+#                'reggaeton', 'rock-n-roll', 'rock', 'rockabilly', 'romance', 'sad', 'salsa',
+#                'samba', 'sertanejo', 'show-tunes', 'singer-songwriter', 'ska', 'sleep',
+#                'songwriter', 'soul', 'spanish', 'study', 'swedish', 'synth-pop', 'tango',
+#                'techno', 'trance', 'trip-hop', 'turkish', 'world-music']
+#    # genre_vector = [1 if genre in song['track_genre'] else 0 for genre in all_genres]
+#    genre_vector = [1 if genre in song.get('track_genre', []) else 0 for genre in all_genres]
 
-   # Create a vector with the remaining features
-   features = [song['tempo'], song['energy'], song['danceability'], song['valence']]
+#    # Create a vector with the remaining features
+#    features = [song['tempo'], song['energy'], song['danceability'], song['valence']]
    
-   # Combine genre vector with numerical features
-   return np.array(genre_vector + features) 
+#    # Combine genre vector with numerical features
+#    return np.array(genre_vector + features) 
 
-def artist_to_vector(artist):
-   return np.array([artist['tempo'], artist['energy'], artist['danceability'], artist['valence']])
+# def artist_to_vector(artist):
+#    return np.array([artist['tempo'], artist['energy'], artist['danceability'], artist['valence']])
 
-def get_recommended_songs(user_profile, user_artists):
-   recommended_songs = []
-   seen_songs = {}  # Dictionary to keep track of seen songs
+# def get_recommended_songs(user_profile, user_artists):
+#    recommended_songs = []
+#    seen_songs = {}  # Dictionary to keep track of seen songs
 
-   # Convert user profile to a vector
-   user_profile_vector = song_to_vector(user_profile)
-   # user_profile_vector = np.array([user_profile['tempo'], user_profile['energy'], user_profile['danceability'], user_profile['valence']])
-   # user_profile_vector = song_to_vector(user_artists)
-   user_artist_vector = artist_to_vector(user_artists)
+#    # Convert user profile to a vector
+#    user_profile_vector = song_to_vector(user_profile)
+#    # user_profile_vector = np.array([user_profile['tempo'], user_profile['energy'], user_profile['danceability'], user_profile['valence']])
+#    # user_profile_vector = song_to_vector(user_artists)
+#    user_artist_vector = artist_to_vector(user_artists)
 
-   # Convert all songs in the dataset to vectors
-   song_vectors = np.array([song_to_vector(song) for song in song_features])
-   # song_vectors = np.array([np.array([song['tempo'], song['energy'], song['danceability'], song['valence']]) for song in song_features])
+#    # Convert all songs in the dataset to vectors
+#    song_vectors = np.array([song_to_vector(song) for song in song_features])
+#    # song_vectors = np.array([np.array([song['tempo'], song['energy'], song['danceability'], song['valence']]) for song in song_features])
 
-   # Compute cosine similarity between user profile and each song in the dataset
-   similarities = cosine_similarity(user_profile_vector.reshape(1, -1), song_vectors)
+#    # Compute cosine similarity between user profile and each song in the dataset
+#    similarities = cosine_similarity(user_profile_vector.reshape(1, -1), song_vectors)
 
-   # Sort the songs by similarity (highest first)
-   sorted_similarities = similarities[0].argsort()[::-1]
+#    # Sort the songs by similarity (highest first)
+#    sorted_similarities = similarities[0].argsort()[::-1]
    
-   unique_songs = []  # List to store unique songs
-   # Get the top N recommended songs (e.g., top 10)
-   for i in sorted_similarities:
-      song = song_features[i]
-      song_key = (song['track_name'], song['artists'])  # Create a key based on song title and artist name
+#    unique_songs = []  # List to store unique songs
+#    # Get the top N recommended songs (e.g., top 10)
+#    for i in sorted_similarities:
+#       song = song_features[i]
+#       song_key = (song['track_name'], song['artists'])  # Create a key based on song title and artist name
 
-      if song_key not in seen_songs:  # Check if song has been seen before
-         seen_songs[song_key] = True  # Mark song as seen
-         song['similarity_score'] = similarities[0][i]  # Store the similarity score in the song dictionary
-         # song['similarity_to_artists'] = cosine_similarity(
-         #    artist_to_vector(user_artists).reshape(1, -1),
-         #    song_to_vector(song).reshape(1, -1)
-         # )[0][0]
-         song['similarity_to_artists'] = np.dot(artist_to_vector(user_artists), song_to_vector(song)) / (np.linalg.norm(artist_to_vector(user_artists)) * np.linalg.norm(song_to_vector(song)))
-         unique_songs.append(song)
+#       if song_key not in seen_songs:  # Check if song has been seen before
+#          seen_songs[song_key] = True  # Mark song as seen
+#          song['similarity_score'] = similarities[0][i]  # Store the similarity score in the song dictionary
+#          # song['similarity_to_artists'] = cosine_similarity(
+#          #    artist_to_vector(user_artists).reshape(1, -1),
+#          #    song_to_vector(song).reshape(1, -1)
+#          # )[0][0]
+#          song['similarity_to_artists'] = np.dot(artist_to_vector(user_artists), song_to_vector(song)) / (np.linalg.norm(artist_to_vector(user_artists)) * np.linalg.norm(song_to_vector(song)))
+#          unique_songs.append(song)
 
-   top_n = 10
-   recommended_songs = sorted(unique_songs, key=lambda x: x['similarity_score'], reverse=True)[:top_n]
+#    top_n = 10
+#    recommended_songs = sorted(unique_songs, key=lambda x: x['similarity_score'], reverse=True)[:top_n]
 
-   # Calculate the similarity between the user's inputted artists and the recommended songs
-   # recommended_songs_with_similarity = []
-   # for song in recommended_songs:
-   #    artist_vector = artist_to_vector(user_artists)
-   #    similarity = cosine_similarity(song_vectors.reshape(1, -1), artist_vector.reshape(1, -1))[0][0]
-   #    song['similarity_to_user_artists'] = similarity
-   #    recommended_songs_with_similarity.append(song)
+#    # Calculate the similarity between the user's inputted artists and the recommended songs
+#    # recommended_songs_with_similarity = []
+#    # for song in recommended_songs:
+#    #    artist_vector = artist_to_vector(user_artists)
+#    #    similarity = cosine_similarity(song_vectors.reshape(1, -1), artist_vector.reshape(1, -1))[0][0]
+#    #    song['similarity_to_user_artists'] = similarity
+#    #    recommended_songs_with_similarity.append(song)
 
-   return recommended_songs
+#    return recommended_songs
 
-@app.route('/new_user_recommendations', methods=['POST'])
-def new_user():
-   # Ensure the user is logged in
-   if 'access_token' not in session:
-      return jsonify({"error": "Please log in to use this feature"}), 401
 
-   artist1 = request.form.get('artist1')
-   artist2 = request.form.get('artist2')
-   artist3 = request.form.get('artist3')
+@app.route("/new_user_recommendations", methods=["POST"])
+def new_user_recommendations():
+   # Get user input
+   artist1 = request.form.get("artist1")
+   if not artist1:
+      return render_template("index.html", recommendations=[])
 
-   input_artists = [artist1, artist2, artist3]
-   user_profile = generate_user_profile(input_artists) # Generate user profile from the input artists
-   print('USER PROFILE:', user_profile)
+   # Content-based filtering logic
+   def recommend_songs(artist_name, dataset, num_recommendations=10):
+      # Filter dataset for songs by the input artist
+      artist_songs = dataset[dataset['artists'].str.contains(artist_name, case=False, na=False)]
+      if artist_songs.empty:
+         return []
 
-   # Calculate the average audio features of the user's inputted artists
-   user_artists = {'tempo': 0, 'energy': 0, 'danceability': 0, 'valence': 0}
-   # Filter songs for the provided artists
-   artist_songs = [
-      song for song in song_features
-      if any(artist.lower() in str(song.get('artists', '')).lower() for artist in input_artists)
-   ]
+      # Define feature columns for similarity calculation
+      features = ['danceability', 'energy', 'valence', 'tempo', 'acousticness', 'instrumentalness', 'liveness']
 
-   for artist in input_artists:
-      for song in song_features:
-         if song['artists'] == artist:
-               artist_songs.append(song)
+      # Ensure no NaN values in the features
+      dataset_cleaned = dataset.dropna(subset=features).reset_index(drop=True)
+      
+      # Scale features for similarity calculation
+      scaler = StandardScaler()
+      scaled_features = scaler.fit_transform(dataset_cleaned[features])
 
-   # Calculate the average audio features of the artist's songs
-   if artist_songs:
-      user_artists['tempo'] = sum(song['tempo'] for song in artist_songs) / len(artist_songs)
-      user_artists['energy'] = sum(song['energy'] for song in artist_songs) / len(artist_songs)
-      user_artists['danceability'] = sum(song['danceability'] for song in artist_songs) / len(artist_songs)
-      user_artists['valence'] = sum(song['valence'] for song in artist_songs) / len(artist_songs)
+      # Find indices of the input artist's songs
+      artist_indices = artist_songs.index.intersection(dataset_cleaned.index)
 
-   # print('USER ARTISTS: ', user_artists)
-   # print('ARTIST SONGS: ', artist_songs)
+      # Compute similarity scores
+      similarity_scores = cosine_similarity(scaled_features[artist_indices], scaled_features)
 
-   # Call the get_recommended_songs function with the user_artists dictionary
-   recommended_songs = get_recommended_songs(user_profile, user_artists)
-   # print('RECOMMENDED SONGS:', recommended_songs)
+      # Flatten and rank similarity scores
+      similarity_means = similarity_scores.mean(axis=0)
+
+      # Align similarity scores with dataset_cleaned
+      dataset_cleaned['similarity_score'] = similarity_means
+
+      # Sort by similarity and exclude input artist's songs
+      recommendations = dataset_cleaned.loc[~dataset_cleaned.index.isin(artist_indices)]
+      recommendations = recommendations.sort_values(by='similarity_score', ascending=False)
+
+      # Drop duplicates based on track_id to ensure uniqueness
+      recommendations = recommendations.drop_duplicates(subset='track_id')
+
+      # Return the top N recommendations
+      return recommendations.head(num_recommendations)
+
+   recommendations = recommend_songs(artist1, dataset)
+   recommendations = recommendations.to_dict(orient="records")
+
+   # Pass recommendations to the template
+   return render_template("new_user.html", recommendations=recommendations)
+
+# @app.route('/new_user_recommendations', methods=['POST'])
+# def new_user():
+#    # Ensure the user is logged in
+#    if 'access_token' not in session:
+#       return jsonify({"error": "Please log in to use this feature"}), 401
+
+#    artist1 = request.form.get('artist1')
+#    artist2 = request.form.get('artist2')
+#    artist3 = request.form.get('artist3')
+
+#    input_artists = [artist1, artist2, artist3]
+#    user_profile = generate_user_profile(input_artists) # Generate user profile from the input artists
+#    print('USER PROFILE:', user_profile)
+
+#    # Calculate the average audio features of the user's inputted artists
+#    user_artists = {'tempo': 0, 'energy': 0, 'danceability': 0, 'valence': 0}
+#    # Filter songs for the provided artists
+#    artist_songs = [
+#       song for song in song_features
+#       if any(artist.lower() in str(song.get('artists', '')).lower() for artist in input_artists)
+#    ]
+
+#    for artist in input_artists:
+#       for song in song_features:
+#          if song['artists'] == artist:
+#                artist_songs.append(song)
+
+#    # Calculate the average audio features of the artist's songs
+#    if artist_songs:
+#       user_artists['tempo'] = sum(song['tempo'] for song in artist_songs) / len(artist_songs)
+#       user_artists['energy'] = sum(song['energy'] for song in artist_songs) / len(artist_songs)
+#       user_artists['danceability'] = sum(song['danceability'] for song in artist_songs) / len(artist_songs)
+#       user_artists['valence'] = sum(song['valence'] for song in artist_songs) / len(artist_songs)
+
+#    # print('USER ARTISTS: ', user_artists)
+#    # print('ARTIST SONGS: ', artist_songs)
+
+#    # Call the get_recommended_songs function with the user_artists dictionary
+#    recommended_songs = get_recommended_songs(user_profile, user_artists)
+#    # print('RECOMMENDED SONGS:', recommended_songs)
    
-   return render_template('new_user.html', recommendations=recommended_songs)
+#    return render_template('new_user.html', recommendations=recommended_songs)
 
    
 # def calculate_average_features(songs):

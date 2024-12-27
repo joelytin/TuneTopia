@@ -87,30 +87,30 @@ def about():
 
 # @app.route('/recommend')
 # def recommend():
-   # if 'access_token' not in session:
-   #    return redirect(url_for('login'))
+#    if 'access_token' not in session:
+#       return redirect(url_for('login'))
    
-   # if datetime.now().timestamp() > session['expires_at']:
-   #    return redirect(url_for('refresh_token'))
+#    if datetime.now().timestamp() > session['expires_at']:
+#       return redirect(url_for('refresh_token'))
    
-   # headers = {
-   #    'Authorization': f"Bearer {session['access_token']}"
-   # }
-   # response = requests.get(API_BASE_URL + 'me/top/tracks', headers=headers)
+#    headers = {
+#       'Authorization': f"Bearer {session['access_token']}"
+#    }
+#    response = requests.get(API_BASE_URL + 'me/top/tracks', headers=headers)
 
-   # # Print the status code and response content for debugging
-   # print("Response Status Code:", response.status_code)
-   # print("Response JSON:", response.json())
+#    # Print the status code and response content for debugging
+#    print("Response Status Code:", response.status_code)
+#    print("Response JSON:", response.json())
 
-   # response_data = response.json()
-   # if 'items' in response_data:
-   #    user_top_tracks = response_data['items']
-   #    user_top_track_ids = [track['id'] for track in user_top_tracks]
+#    response_data = response.json()
+#    if 'items' in response_data:
+#       user_top_tracks = response_data['items']
+#       user_top_track_ids = [track['id'] for track in user_top_tracks]
 
-   #    recommendations = hybrid_recommendations(user_top_track_ids, dataset)
-   #    return render_template('recommend.html', recommendations=recommendations)
-   # else:
-   #    return jsonify({"error": "Failed to get top tracks. Please try again later."})
+#       recommendations = hybrid_recommendations(user_top_track_ids, dataset)
+#       return render_template('recommend.html', recommendations=recommendations)
+#    else:
+#       return jsonify({"error": "Failed to get top tracks. Please try again later."})
    
 @app.route('/recommend')
 def recommend():
@@ -400,10 +400,11 @@ def get_recommended_songs(user_profile, user_artists):
       if song_key not in seen_songs:  # Check if song has been seen before
          seen_songs[song_key] = True  # Mark song as seen
          song['similarity_score'] = similarities[0][i]  # Store the similarity score in the song dictionary
-         song['similarity_to_artists'] = cosine_similarity(
-            artist_to_vector(user_artists).reshape(1, -1),
-            song_to_vector(song).reshape(1, -1)
-         )[0][0]
+         # song['similarity_to_artists'] = cosine_similarity(
+         #    artist_to_vector(user_artists).reshape(1, -1),
+         #    song_to_vector(song).reshape(1, -1)
+         # )[0][0]
+         song['similarity_to_artists'] = np.dot(artist_to_vector(user_artists), song_to_vector(song)) / (np.linalg.norm(artist_to_vector(user_artists)) * np.linalg.norm(song_to_vector(song)))
          unique_songs.append(song)
 
    top_n = 10
@@ -435,9 +436,10 @@ def new_user():
 
    # Calculate the average audio features of the user's inputted artists
    user_artists = {'tempo': 0, 'energy': 0, 'danceability': 0, 'valence': 0}
+   # Filter songs for the provided artists
    artist_songs = [
       song for song in song_features
-      if any(artist in song['artists'].lower() for artist in input_artists)
+      if any(artist.lower() in str(song.get('artists', '')).lower() for artist in input_artists)
    ]
 
    for artist in input_artists:

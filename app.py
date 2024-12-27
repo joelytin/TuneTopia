@@ -206,6 +206,10 @@ def logout():
 def new_user_form():
    return render_template('new_user.html')
 
+@app.route('/long-user-form')
+def long_user_form():
+   return render_template('long_user.html')
+
 @app.route('/search_artists')
 def search_artists():
    query = request.args.get('query', '')
@@ -225,10 +229,10 @@ def search_artists():
       matched_artists_info.append({'name': artist, 'popularity': popularity})
 
    # Sort the artists by popularity
-   sorted_artists = sorted(matched_artists_info, key=lambda x: x['popularity'], reverse=True)
+   # sorted_artists = sorted(matched_artists_info, key=lambda x: x['popularity'], reverse=True)
 
-   # Limit results to top 10 for efficiency
-   return jsonify(sorted_artists[:10])
+   # # Limit results to top 10 for efficiency
+   # return jsonify(sorted_artists[:10])
 
 # def search_artists():
    # query = request.args.get('query', '')

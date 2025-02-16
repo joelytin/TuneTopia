@@ -15,7 +15,6 @@
 
   <body>
     <div class="site">
-      {% if session.get('access_token') %}
       <nav>
         <a class="logo" href="/">TUNETOPIA</a>
 
@@ -41,9 +40,7 @@
             <a href="{{ url_for('metronome') }}" class="{% if request.path == url_for('metronome') %}active{% endif %}">Metronome</a>
           </div>
         </div>
-        <div class="logout-btn"><a href="{{ url_for('logout') }}">Logout</a></div>
       </nav>
-      {% endif %}
 
       <div class="content-container">
         <div class="content">{% block content %}{% endblock %}</div>
@@ -70,7 +67,7 @@
           </ul>
         </div>
         <div class="footer-bottom">
-          <p>&copy; 2024 TuneTopia. Designed by Joely Tin. All rights reserved.</p>
+          <p>&copy; 2025 TuneTopia. Designed by Joely Tin. All rights reserved.</p>
         </div>
       </footer>
 

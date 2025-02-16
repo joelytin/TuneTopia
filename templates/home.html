@@ -10,7 +10,7 @@
     <img class="profile-img" src="{{ session['user_image'] }}" alt="Profile Image">
     {% endif %}
 
-    <h1 class="title">Welcome, {{ session['user_name'] }}!</h1>
+    <h1 class="title">Welcome!</h1>
     <p class="subtitle">Personalised music discovery platform</p>
 
     <a class="recommendations-btn" href="{{ url_for('recommend') }}">Give me recommendations</a>

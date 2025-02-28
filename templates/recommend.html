@@ -1,46 +1,136 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} 
+{% block content %}
 
-<link
-    rel="stylesheet"
-    href="{{ url_for('static', filename='css/recommend-styles.css') }}"
-/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/recommend-styles.css') }}" />
 
 <section>
-  <div class="long-time-user-container">
-    <h2 class="title">Long-time Spotify user?</h2>
-    <p class="subtitle">Generate recommendations based on your Spotify data.</p>
-    <a class="generate-btn" href="{{ url_for('long_user_form') }}">Generate</a>
-  </div>
+    <h2 class="title">Enter your favourite artist.</h2>
 
-  <div class="new-user-container">
-    <h2 class="title">New Spotify user?</h2>
-    <p class="subtitle">You may not have enough historical data on your account.</p>
-    <a class="new-user-btn" href="{{ url_for('new_user_form') }}">New users click here</a>
-  </div>
-  <!-- <p>
-    <button onclick="window.location.href='{{ url_for('recommend') }}'">
-      Recommend me songs
-    </button>
-  </p> -->
+    <form id="artist-form" action="/recommend" method="post">
+        <div class="form-group">
+            <label for="artist">Artist Name:</label>
+            <input type="text" id="artist" name="artist" autocomplete="off" oninput="fetchArtistSuggestions('artist'); validateForm();">
+        </div>
+
+        <div class="form-group">
+            <label for="alpha">Alpha (0.1 - 0.9):</label>
+            <p class="note">Note: Closer to 0 favors genre similarity. Closer to 1 favors audio feature similarity.</p>
+            
+            <input type="range" id="alpha" name="alpha" min="0.1" max="0.9" step="0.1" value="0.5" oninput="updateAlphaValue(this.value)">
+            <span id="alpha-value">0.5</span>
+        </div>
+
+        <div class="form-group">
+            <label for="num_songs">Number of Songs:</label>
+            <select id="num_songs" name="num_songs">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15" selected>15</option>
+                <option value="20">20</option>
+            </select>
+        </div>
+    
+        <div class="btn-container">
+            <button type="submit" class="generate-btn" id="generate-btn">Generate</button>
+        </div>
+    </form>
+
+    {% if recommendations %}
+    <h2 class="recommendation-title">Your Recommended Tracks</h2>
+    <div class="recommendation-container">
+        <ol>
+            {% for song in recommendations %}
+                <li>
+                    <strong>{{ song['track_name'] }}</strong> by {{ song['artists'] }} (Popularity: {{ song['popularity'] }})
+                    <br> Key: {{ song['key'] }}
+                    <br> Genre: {{ song['track_genre'] }}
+                    <br> Tempo: {{ song['tempo'] }}
+                    <br> Energy: {{ song['energy'] }}
+                    <br> Danceability: {{ song['danceability'] }}
+                    <br> Valence: {{ song['valence'] }}
+                </li>
+            {% endfor %}
+        </ol>
+    </div>
+    {% endif %}
+
 </section>
 
-<div id="recommendations">
-  {% if recommendations %}
-  <h2>Recommended Tracks</h2>
-  {% for track in recommendations %}
-  <div class="track">
-    <span class="track-number">{{ loop.index }}</span>
-    <img
-      src="{{ track.album.images[0].url }}"
-      alt="{{ track.album.name }}"
-      width="100"
-    />
-    <h3>{{ track.name }}</h3>
-    <p>Artist: {{ track.artists[0].name }}</p>
-    <p>Album: {{ track.album.name }}</p>
-  </div>
-  {% endfor %}
-  {% endif %}
-</div>
+<script>
+    async function fetchArtistSuggestions(inputId) {
+        const input = document.getElementById(inputId);
+        const suggestionsDiv = document.getElementById(`suggestions${inputId.slice(-1)}`);
+        const query = input.value;
+
+        if (query.length < 2) {
+            suggestionsDiv.style.display = 'none';
+            return;
+        }
+
+        try {
+            // Fetch suggestions from your backend API route, sorting by popularity
+            const response = await fetch(`/search_artists?query=${query}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const artists = await response.json();
+
+            // Sort artists by popularity
+            artists.sort((a, b) => b.popularity - a.popularity);
+
+            // Clear current suggestions
+            suggestionsDiv.innerHTML = '';
+
+            // Add sorted suggestions to the dropdown
+            artists.forEach(artist => {
+                const suggestion = document.createElement('div');
+                suggestion.textContent = artist.name;
+                suggestion.onclick = () => {
+                    input.value = artist.name;
+                    suggestionsDiv.style.display = 'none';
+                };
+                suggestionsDiv.appendChild(suggestion);
+            });
+
+            suggestionsDiv.style.display = 'block';
+        } catch (error) {
+            console.error('Error fetching artist suggestions:', error);
+        }
+    }
+
+
+    // Hide the suggestions dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const suggestionsDivs = document.querySelectorAll('.suggestions');
+        suggestionsDivs.forEach(div => {
+            // Check if the click was outside the input and suggestions container
+            if (!div.contains(event.target) && !div.previousElementSibling.contains(event.target)) {
+                div.style.display = 'none';
+            }
+        });
+    });
+
+    // Validation function to check if the field is filled
+    function validateForm() {
+        const artist = document.getElementById('artist').value.trim();
+        const generateBtn = document.getElementById('generate-btn');
+
+        if (artist.length > 0) {
+            generateBtn.disabled = false;
+        } else {
+            generateBtn.disabled = true;
+        }
+    }
+
+    // Ensure the button is disabled on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        validateForm();
+    });
+
+    function updateAlphaValue(value) {
+        document.getElementById('alpha-value').innerText = value;
+    }
+
+</script>
 
 {% endblock %}

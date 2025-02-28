@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/result-styles.css') }}" />
+
+<section>
+    <h2 class="title">Your Recommended Tracks</h2>
+
+    <div class="recommendation-container">
+        {% if recommendations %}
+        <div class="track-cards">
+            {% for song in recommendations %}
+            <div class="track-card">
+                <div class="track-card-header">
+                    {{ song['track_name'] }} - {{ song['artists'] }}
+                </div>
+                <div class="track-card-body">
+                    <p><strong>Genre:</strong> {{ song['track_genre'] }}</p>
+                    <p><strong>Key:</strong> {{ song['key'] }}</p>
+                    <p><strong>Tempo:</strong> {{ song['tempo'] }} BPM</p>
+                    <p><strong>Energy:</strong> {{ song['energy'] }}</p>
+                    <p><strong>Danceability:</strong> {{ song['danceability'] }}</p>
+                    <p><strong>Valence:</strong> {{ song['valence'] }}</p>
+                </div>
+                <div class="track-card-footer">
+                    <p><strong>Popularity:</strong> {{ song['popularity'] }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>No recommendations found. Please try again.</p>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

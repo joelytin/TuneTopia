@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, session, request, jsonify
+from model import recommend_songs, evaluate_model, df
 import pandas as pd
 import re
 
@@ -52,21 +53,36 @@ def home():
 def about():
    return render_template('about.html')
 
-@app.route('/recommend')
+@app.route('/recommend', methods=['GET', 'POST'])
 def recommend():
-   return render_template('recommend.html')
+   if request.method == 'GET':
+      return render_template('recommend.html')
+
+   elif request.method == 'POST':
+      artist_name = request.form.get('artist', '').strip()
+      alpha = float(request.form.get('alpha', 0.5))  # Default to 0.5 if not provided
+      num_songs = int(request.form.get('num_songs', 15))  # Default to 15
+
+      if not artist_name:
+         return render_template("recommend.html", error="Please enter an artist name.")
+
+      recommended_songs = recommend_songs(artist_name, df, num_songs=num_songs, alpha=alpha)
+
+      if recommended_songs is None:
+         return render_template("recommend.html", error="Artist not found in the dataset.")
+
+      input_genre = df[df['artists'].str.contains(artist_name, case=False, na=False)].iloc[0]['track_genre']
+      evaluation_results = evaluate_model(recommended_songs, input_genre, num_songs)
+
+      return render_template("result.html",
+                              artist_name=artist_name,
+                              recommendations=recommended_songs.to_dict(orient='records'),
+                              evaluation_results=evaluation_results)
+
 
 @app.route('/metronome')
 def metronome():
    return render_template('metronome.html')
-
-@app.route('/new-user-form')
-def new_user_form():
-   return render_template('new_user.html')
-
-@app.route('/long-user-form')
-def long_user_form():
-   return render_template('long_user.html')
 
 @app.route('/search_artists')
 def search_artists():

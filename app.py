@@ -74,6 +74,8 @@ def recommend():
       input_genre = df[df['artists'].str.contains(artist_name, case=False, na=False)].iloc[0]['track_genre']
       evaluation_results = evaluate_model(recommended_songs, input_genre, num_songs)
 
+      # print(type(recommended_songs['artists']), recommended_songs['artists'])
+
       return render_template("result.html",
                               artist_name=artist_name,
                               recommendations=recommended_songs.to_dict(orient='records'),
@@ -86,27 +88,22 @@ def metronome():
 
 @app.route('/search_artists')
 def search_artists():
-   query = request.args.get('query', '')
+   query = request.args.get('query', '').strip().lower()
    if not query:
       return jsonify([])
 
-   # Normalize query by removing non-alphanumeric characters
-   normalized_query = re.sub(r'\W+', '', query.lower())
+   # Normalise spaces in query (replace multiple spaces with a single space)
+   normalized_query = re.sub(r'\s+', ' ', query)
 
-   # Filter artists that match the query (case insensitive)
-   matched_artists = [artist for artist in unique_artists if normalized_query in artist]
+   # Filter artists whose names start with or contain the query (case-insensitive)
+   starts_with_matches = [artist for artist in unique_artists if artist.lower().startswith(normalized_query)]
+   contains_matches = [artist for artist in unique_artists if normalized_query in artist.lower() and artist not in starts_with_matches]
 
-   # Retrieve the popularity for each matched artist
-   matched_artists_info = []
-   for artist in matched_artists:
-      popularity = artist_popularity[artist]
-      matched_artists_info.append({'name': artist, 'popularity': popularity})
+   # Combine and retrieve popularity
+   matched_artists = starts_with_matches + contains_matches
+   matched_artists_info = [{'name': artist.title()} for artist in matched_artists]  # Capitalize names
 
-   # Sort the artists by popularity
-   sorted_artists = sorted(matched_artists_info, key=lambda x: x['popularity'], reverse=True)
-
-   # Limit results to top 20 for efficiency
-   return jsonify(sorted_artists[:20])
+   return jsonify(matched_artists_info[:10])  # Limit to top 10 results for efficiency
 
 if __name__ == '__main__':
    app.run(debug=True)

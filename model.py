@@ -11,7 +11,7 @@ import joblib
 df = pd.read_csv("data/huggingface.csv")
 
 # Select features
-features = ['danceability', 'energy', 'valence', 'tempo', 'speechiness', 'acousticness', 'instrumentalness', 'liveness']
+features = ['danceability', 'energy', 'valence', 'speechiness', 'acousticness', 'instrumentalness', 'liveness']
 
 # Normalize feature values
 scaler = StandardScaler()
@@ -77,7 +77,12 @@ def recommend_songs(artist_name, df=df, features=features, num_songs=15, alpha=0
 
    recommended_songs['key'] = recommended_songs['key'].map(key_mapping) # Map numeric key values to musical notes
 
-   return recommended_songs[['track_name', 'artists', 'track_genre', 'cosine_similarity', 'final_score', 'key', 'tempo', 'danceability', 'acousticness', 'valence', 'energy', 'popularity']].head(num_songs)
+   recommended_songs = recommended_songs.head(num_songs).copy()  # Copy only necessary rows
+   recommended_songs['artists'] = recommended_songs['artists'].astype(str)  # Convert only required rows
+
+   return recommended_songs[['track_name', 'artists', 'track_genre', 'cosine_similarity', 
+                          'final_score', 'key', 'tempo', 'danceability', 'acousticness', 
+                          'valence', 'energy', 'popularity', 'mode', 'loudness', 'time_signature']]
 
 def evaluate_model(recommended_songs, input_genre, num_songs=15):
    mean_cosine_similarity = recommended_songs['cosine_similarity'].mean()

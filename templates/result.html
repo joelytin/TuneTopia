@@ -12,15 +12,48 @@
             {% for song in recommendations %}
             <div class="track-card">
                 <div class="track-card-header">
-                    {{ song['track_name'] }} - {{ song['artists'] }}
+                    <strong>{{ song['track_name'] }}</strong> - {{ (song['artists']).replace(';', ', ') }}
                 </div>
                 <div class="track-card-body">
                     <p><strong>Genre:</strong> {{ song['track_genre'] }}</p>
                     <p><strong>Key:</strong> {{ song['key'] }}</p>
-                    <p><strong>Tempo:</strong> {{ song['tempo'] }} BPM</p>
-                    <p><strong>Energy:</strong> {{ song['energy'] }}</p>
-                    <p><strong>Danceability:</strong> {{ song['danceability'] }}</p>
-                    <p><strong>Valence:</strong> {{ song['valence'] }}</p>
+                    <p><strong>Tempo:</strong> {{ song['tempo']|round|int }} BPM</p>
+                    <p><strong>Energy:</strong> {{ "%.2f"|format(song['energy']) }} 
+                        {% if song['energy'] < 0.3 %}
+                            (Low)
+                        {% elif song['energy'] < 0.7 %}
+                            (Medium)
+                        {% else %}
+                            (High)
+                        {% endif %}
+                    </p>
+                    <p><strong>Danceability:</strong> {{ "%.2f"|format(song['danceability']) }} 
+                        {% if song['danceability'] < 0.3 %}
+                            (Low)
+                        {% elif song['danceability'] < 0.7 %}
+                            (Medium)
+                        {% else %}
+                            (High)
+                        {% endif %}
+                    </p>
+                    <p><strong>Valence:</strong> {{ "%.2f"|format(song['valence']) }} 
+                        {% if song['valence'] < 0.3 %}
+                            (Sad)
+                        {% elif song['valence'] < 0.7 %}
+                            (Neutral)
+                        {% else %}
+                            (Happy)
+                        {% endif %}
+                    </p>
+                    <p><strong>Mode:</strong> 
+                        {% if song['mode'] == 1 %}
+                            Major
+                        {% else %}
+                            Minor
+                        {% endif %}
+                    </p>
+                    <p><strong>Loudness:</strong> {{ "%.2f"|format(song['loudness']) }} dB</p>
+                    <p><strong>Time Signature:</strong> {{ song['time_signature'] }}/4</p>
                 </div>
                 <div class="track-card-footer">
                     <p><strong>Popularity:</strong> {{ song['popularity'] }}</p>

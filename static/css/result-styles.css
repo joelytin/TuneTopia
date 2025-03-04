@@ -2,8 +2,9 @@ section {
    display: flex;
    flex-direction: column;
    align-items: center;
-   height: 100vh;
+   min-height: 100vh; /* Ensures it expands with content */
    height: auto;
+   padding-bottom: 3rem; /* Adds spacing at the bottom */
 }
 
 .title {
@@ -24,16 +25,31 @@ section {
    border-radius: 8px;
    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
    max-width: 1200px;
+   width: 100%;
    margin: 0 auto;
 }
  
 .track-cards {
    display: grid;
-   grid-template-columns: repeat(2, 1fr); /* 2 columns */
+   grid-template-columns: repeat(3, 1fr); /* 3 columns */
    gap: 1.5rem;
-   grid-template-rows: repeat(10, auto); /* 10 rows, adjusting to the content */
-   max-height: calc(10 * (280px + 1.5rem)); /* Adjusting max height to accommodate 10 rows */
-   overflow-y: auto; /* Allow scrolling if there are more than 10 recommendations */
+   grid-template-rows: auto; /* Let rows expand dynamically */
+   max-height: auto;
+   overflow: visible; /* Allow it to expand naturally */
+}
+
+/* Adjust to 2 columns on medium screens */
+@media (max-width: 1024px) {
+   .track-cards {
+      grid-template-columns: repeat(2, 1fr);
+   }
+}
+
+/* Adjust to 1 column on small screens */
+@media (max-width: 600px) {
+   .track-cards {
+      grid-template-columns: repeat(1, 1fr);
+   }
 }
  
 .track-card {

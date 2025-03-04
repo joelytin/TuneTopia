@@ -9,12 +9,13 @@
     <form id="artist-form" action="/recommend" method="post">
         <div class="form-group">
             <label for="artist">Artist Name:</label>
-            <input type="text" id="artist" name="artist" autocomplete="off" oninput="fetchArtistSuggestions('artist'); validateForm();">
+            <input type="text" id="artist" name="artist" autocomplete="off" oninput="fetchArtistSuggestions(); validateForm();">
+            <div class="suggestions" id="suggestions"></div>
         </div>
 
         <div class="form-group">
-            <label for="alpha">Alpha (0.1 - 0.9):</label>
-            <p class="note">Note: Closer to 0 favors genre similarity. Closer to 1 favors audio feature similarity.</p>
+            <label for="alpha">Genre Similarity Weight, α (0.1 - 0.9):</label>
+            <p class="note">Note: Closer to 0 favours genre similarity. Closer to 1 favours audio feature similarity.</p>
             
             <input type="range" id="alpha" name="alpha" min="0.1" max="0.9" step="0.1" value="0.5" oninput="updateAlphaValue(this.value)">
             <span id="alpha-value">0.5</span>
@@ -32,6 +33,12 @@
     
         <div class="btn-container">
             <button type="submit" class="generate-btn" id="generate-btn">Generate</button>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="hidden">
+            <div class="spinner"></div>
+            <p>Loading recommendations...</p>
         </div>
     </form>
 
@@ -57,47 +64,40 @@
 </section>
 
 <script>
-    async function fetchArtistSuggestions(inputId) {
-        const input = document.getElementById(inputId);
-        const suggestionsDiv = document.getElementById(`suggestions${inputId.slice(-1)}`);
-        const query = input.value;
+    async function fetchArtistSuggestions() {
+        const input = document.getElementById('artist');
+        const suggestionsDiv = document.getElementById('suggestions');
+        let query = input.value.replace(/\s+/g, ' ').trim();  // Normalize spaces
 
-        if (query.length < 2) {
+        if (query.length < 2) { // Only check trimmed length
             suggestionsDiv.style.display = 'none';
             return;
         }
 
         try {
-            // Fetch suggestions from your backend API route, sorting by popularity
             const response = await fetch(`/search_artists?query=${query}`);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const artists = await response.json();
+            if (!response.ok) throw new Error('Network response was not ok');
 
-            // Sort artists by popularity
-            artists.sort((a, b) => b.popularity - a.popularity);
+            const artists = await response.json();            
+            suggestionsDiv.innerHTML = ''; // Clear previous suggestions
 
-            // Clear current suggestions
-            suggestionsDiv.innerHTML = '';
-
-            // Add sorted suggestions to the dropdown
+            // Add new suggestions
             artists.forEach(artist => {
                 const suggestion = document.createElement('div');
+                suggestion.classList.add('suggestion-item');
                 suggestion.textContent = artist.name;
                 suggestion.onclick = () => {
                     input.value = artist.name;
-                    suggestionsDiv.style.display = 'none';
+                    suggestionsDiv.style.display = 'none'; // Hide dropdown after selection
                 };
                 suggestionsDiv.appendChild(suggestion);
             });
 
-            suggestionsDiv.style.display = 'block';
+            suggestionsDiv.style.display = 'block'; // Show dropdown
         } catch (error) {
-            console.error('Error fetching artist suggestions:', error);
+            console.error('Error fetching artist suggestions: ', error);
         }
     }
-
 
     // Hide the suggestions dropdown when clicking outside
     document.addEventListener('click', function(event) {
@@ -131,6 +131,24 @@
         document.getElementById('alpha-value').innerText = value;
     }
 
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("artist-form");
+        const spinner = document.getElementById("loading-spinner");
+        const button = document.getElementById("generate-btn");
+
+        form.addEventListener("submit", function() {
+            spinner.classList.remove("hidden");  // Show spinner on submit
+            button.disabled = true;  // Disable button to prevent multiple clicks
+        });
+
+        // Ensure the spinner is hidden on initial page load
+        spinner.classList.add("hidden");
+    });
+
+    // Update alpha value display
+    document.getElementById("alpha").addEventListener("input", function() {
+        document.getElementById("alpha-value").textContent = this.value;
+    });
 </script>
 
 {% endblock %}

@@ -10,6 +10,10 @@ section {
 .title {
    font-size: 2rem;
    margin: 3rem 0;
+   font-weight: bold;
+   text-transform: uppercase;
+   letter-spacing: 1px;
+   text-align: center;
 }
 
 .recommendation-title {
@@ -18,31 +22,24 @@ section {
    font-size: 2rem;
    font-weight: bold;
 }
- 
+
 .recommendation-container {
    background: #ffffff;
    padding: 2rem;
-   border-radius: 8px;
-   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+   border-radius: 12px;
+   box-shadow: 0 4 15px rgba(0, 0, 0, 0.08);
    max-width: 1200px;
    width: 100%;
    margin: 0 auto;
 }
- 
+
 .track-cards {
    display: grid;
-   grid-template-columns: repeat(3, 1fr); /* 3 columns */
+   grid-template-columns: repeat(2, 1fr); /* 2 columns */
    gap: 1.5rem;
-   grid-template-rows: auto; /* Let rows expand dynamically */
-   max-height: auto;
-   overflow: visible; /* Allow it to expand naturally */
-}
-
-/* Adjust to 2 columns on medium screens */
-@media (max-width: 1024px) {
-   .track-cards {
-      grid-template-columns: repeat(2, 1fr);
-   }
+   /* grid-template-rows: auto; Let rows expand dynamically */
+   /* max-height: auto; */
+   /* overflow: visible; Allow it to expand naturally */
 }
 
 /* Adjust to 1 column on small screens */
@@ -51,43 +48,84 @@ section {
       grid-template-columns: repeat(1, 1fr);
    }
 }
- 
+
+/* Individual track card */
 .track-card {
-   background: white;
-   border-radius: 10px;
-   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+   background: #ffffff;
+   border-radius: 12px;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
    overflow: hidden;
-   transition: transform 0.3s ease;
+   transition: transform 0.3s ease, box-shadow 0.3s ease;
+   padding: 1.5rem;
+   position: relative;
+   display: flex;
+   flex-direction: column;
+   gap: 0.8rem;
 }
- 
+
 .track-card:hover {
    transform: translateY(-10px);  /* Hover effect for the card */
+   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
- 
+
 .track-card-header {
-   background-color: #FD6A02;
+   background: linear-gradient(135deg, #FD6A02, #FF8C42);
    color: white;
-   padding: 15px;
+   padding: 1rem;
    font-size: 1.1rem;
    font-weight: bold;
    text-align: center;
+   border-radius: 8px;
 }
- 
+
+/* Track details */
 .track-card-body {
-   padding: 1rem;
+   display: grid;
+   grid-template-columns: 1fr 1fr;  /* Organize data into two columns */
+   gap: 10px;
    font-size: 1rem;
-   line-height: 1.6;
-   color: #333;
+   line-height: 1.5;
+   color: #444;
 }
- 
-.track-card-footer {
-   background: #f8f9fa;
-   padding: 1rem;
-   font-size: 0.9rem;
-   color: #555;
-   text-align: center;
+
+/* Highlighted attributes */
+.track-card-body p {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   font-size: 0.95rem;
+   background: #f5f5f5;
+   padding: 8px 12px;
+   border-radius: 8px;
 }
- 
-.track-card-footer p {
-   margin: 5px 0;
+
+/* Energy, Danceability, Valence as progress bars */
+/* Progress bar container */
+.progress-bar-container {
+   position: relative;
+   display: flex;
+   align-items: center;
+   cursor: pointer;
+   width: 100px; /* Ensures all bars have the same length */
+}
+
+/* Progress bar background */
+.progress-bar {
+   height: 8px;
+   width: 100px; /* Standardized width */
+   border-radius: 5px;
+   background: #ddd;
+   position: relative;
+   overflow: hidden; /* Prevents overflow issues */
+}
+
+/* Filled part of the progress bar */
+.progress-bar::after {
+   content: '';
+   position: absolute;
+   height: 100%;
+   border-radius: 5px;
+   background: #1DB954;
+   width: min(100%, var(--progress)); /* Ensures it never exceeds 100% */
+   transition: width 0.3s ease-in-out;
 }

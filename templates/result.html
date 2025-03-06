@@ -18,39 +18,21 @@
                     <p><strong>Genre:</strong> {{ song['track_genre'] }}</p>
                     <p><strong>Key:</strong> {{ song['key'] }}</p>
                     <p><strong>Tempo:</strong> {{ song['tempo']|round|int }} BPM</p>
-                    <p><strong>Energy:</strong> {{ "%.2f"|format(song['energy']) }} 
-                        {% if song['energy'] < 0.3 %}
-                            (Low)
-                        {% elif song['energy'] < 0.7 %}
-                            (Medium)
-                        {% else %}
-                            (High)
-                        {% endif %}
+                    
+                    <p><strong>Energy:</strong> 
+                        <span class="progress-bar" style="--progress: {{ song['energy'] * 100 }}%;"></span>
                     </p>
-                    <p><strong>Danceability:</strong> {{ "%.2f"|format(song['danceability']) }} 
-                        {% if song['danceability'] < 0.3 %}
-                            (Low)
-                        {% elif song['danceability'] < 0.7 %}
-                            (Medium)
-                        {% else %}
-                            (High)
-                        {% endif %}
+                    
+                    <p><strong>Danceability:</strong> 
+                        <span class="progress-bar" style="--progress: {{ song['danceability'] * 100 }}%;"></span>
                     </p>
-                    <p><strong>Valence:</strong> {{ "%.2f"|format(song['valence']) }} 
-                        {% if song['valence'] < 0.3 %}
-                            (Sad)
-                        {% elif song['valence'] < 0.7 %}
-                            (Neutral)
-                        {% else %}
-                            (Happy)
-                        {% endif %}
+                    
+                    <p><strong>Valence:</strong> 
+                        <span class="progress-bar" style="--progress: {{ song['valence'] * 100 }}%;"></span>
                     </p>
+        
                     <p><strong>Mode:</strong> 
-                        {% if song['mode'] == 1 %}
-                            Major
-                        {% else %}
-                            Minor
-                        {% endif %}
+                        {% if song['mode'] == 1 %} Major {% else %} Minor {% endif %}
                     </p>
                     <p><strong>Loudness:</strong> {{ "%.2f"|format(song['loudness']) }} dB</p>
                     <p><strong>Time Signature:</strong> {{ song['time_signature'] }}/4</p>
@@ -60,7 +42,7 @@
                 </div>
             </div>
             {% endfor %}
-        </div>
+        </div>        
         {% else %}
         <p>No recommendations found. Please try again.</p>
         {% endif %}

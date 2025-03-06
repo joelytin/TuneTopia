@@ -4,6 +4,7 @@
     rel="stylesheet"
     href="{{ url_for('static', filename='css/metronome-styles.css') }}"
 />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <div class="container">
     <div class="metronome">
@@ -32,6 +33,11 @@
         </div>
         <span class="beats-per-measure-text">Beats per measure</span>
     </div>
+</div>
+
+<div class="volume-control">
+    <i class="fa fa-volume-up" style="font-size:24px"></i>
+    <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
 </div>
 
 <script src="{{ url_for('static', filename='js/metronome.js') }}" type="module" defer></script>

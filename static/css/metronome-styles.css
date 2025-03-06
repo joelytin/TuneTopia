@@ -107,7 +107,7 @@ input[type="range"]::-moz-range-track {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 65%;
+    width: 70%;
     margin: 1.2rem auto;
 }
 
@@ -199,4 +199,16 @@ input[type="range"]::-moz-range-track {
 
 .container.flash {
     animation: flash 0.2s ease-out;
+}
+
+/* Volume slider */
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+#volume-slider {
+    width: 100px;
 }

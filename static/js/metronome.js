@@ -140,3 +140,17 @@ function playClick() {
 }
 
 const metronome = new Timer(playClick, 60000 / bpm, { immediate: true });
+
+/* Volume slider */
+const volumeSlider = document.getElementById('volume-slider');
+
+// Set initial volume
+click1.volume = 1;
+click2.volume = 1;
+
+// Adjust volume based on slider
+volumeSlider.addEventListener('input', () => {
+    const volume = volumeSlider.value;
+    click1.volume = volume;
+    click2.volume = volume;
+});

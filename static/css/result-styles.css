@@ -5,6 +5,7 @@ section {
    min-height: 100vh; /* Ensures it expands with content */
    height: auto;
    padding-bottom: 3rem; /* Adds spacing at the bottom */
+   position: relative;
 }
 
 .title {
@@ -151,4 +152,51 @@ section {
 .progress-bar-container:hover .tooltip {
    visibility: visible;
    opacity: 1;
+}
+
+/* Info icon */
+.info-icon {
+   position: absolute;
+   top: 45px;
+   right: 10px;
+   font-size: 24px;
+   cursor: pointer;
+}
+
+/* Info box */
+.info-box {
+   position: absolute;
+   top: 80px;
+   right: 10px;
+   width: 250px;
+   background: rgba(0, 0, 0, 0.75);
+   color: white;
+   padding: 10px 15px;
+   border-radius: 8px;
+   font-size: 0.9rem;
+   display: none; /* Hidden by default */
+   z-index: 1;
+}
+
+/* Show info box when active */
+.info-box.active {
+   display: block;
+}
+
+/* Info box title */
+.info-box h3 {
+   margin-top: 0;
+   font-size: 1rem;
+   text-align: center;
+}
+
+/* List styling */
+.info-box ul {
+   padding: 0;
+   margin: 0;
+   list-style-type: none;
+}
+
+.info-box li {
+   margin-bottom: 6px;
 }

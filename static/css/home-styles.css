@@ -5,6 +5,18 @@ main {
     justify-content: center;
 }
 
+body {
+    background: linear-gradient(45deg, #ff758c, #ff7eb3, #58a6ff, #6f42c1);
+    background-size: 400% 400%;
+    animation: gradientAnimation 6s ease infinite;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
 .title {
     font-size: 3rem;
     margin-bottom: 0;

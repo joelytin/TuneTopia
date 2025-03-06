@@ -5,18 +5,12 @@ main {
     justify-content: center;
 }
 
-.profile-img {
-    border-radius: 50%;
-    border: 2px solid #3D6887;
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    margin-top: 10px;
-}
-
 .title {
     font-size: 3rem;
     margin-bottom: 0;
+    text-align: center;
+    opacity: 0;
+    animation: fadeIn 1.5s forwards;
 }
 
 .subtitle {
@@ -24,6 +18,14 @@ main {
     font-size: 1.2rem;
     font-weight: 600;
     margin-top: 1rem;
+    text-align: center;
+    opacity: 0;
+    animation: fadeIn 1.5s forwards 0.5s;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 .recommendations-btn {
@@ -43,5 +45,10 @@ main {
 }
 
 .recommendations-btn:hover {
-    background-color: #FD8835;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(145, 145, 145, 0.5);
+}
+
+.tagline {
+    margin: 5rem 0;
 }

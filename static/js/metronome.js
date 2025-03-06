@@ -119,6 +119,8 @@ function playClick() {
     if (count === beatsPerMeasure) {
         count = 0;
     }
+
+    // Play sound
     if (count === 0) {
         click1.play();
         click1.currentTime = 0;
@@ -126,6 +128,14 @@ function playClick() {
         click2.play();
         click2.currentTime = 0;
     }
+
+    // Flash effect on .container
+    const container = document.querySelector('.container');
+    container.classList.add('flash');
+    setTimeout(() => {
+        container.classList.remove('flash');
+    }, 100); // Remove after 100ms
+
     count++;
 }
 

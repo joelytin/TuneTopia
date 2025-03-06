@@ -20,16 +20,25 @@
                     <p><strong>Tempo:</strong> {{ song['tempo']|round|int }} BPM</p>
                     
                     <p><strong>Energy:</strong> 
-                        <span class="progress-bar" style="--progress: {{ song['energy'] * 100 }}%;"></span>
+                        <span class="progress-bar-container">
+                            <span class="tooltip">{{ "%.2f"|format(song['energy']) }}</span>
+                            <span class="progress-bar" style="--progress: {{ song['energy'] * 100 }}%;"></span>
+                        </span>
                     </p>
                     
                     <p><strong>Danceability:</strong> 
-                        <span class="progress-bar" style="--progress: {{ song['danceability'] * 100 }}%;"></span>
+                        <span class="progress-bar-container">
+                            <span class="tooltip">{{ "%.2f"|format(song['danceability']) }}</span>
+                            <span class="progress-bar" style="--progress: {{ song['danceability'] * 100 }}%;"></span>
+                        </span>
                     </p>
                     
                     <p><strong>Valence:</strong> 
-                        <span class="progress-bar" style="--progress: {{ song['valence'] * 100 }}%;"></span>
-                    </p>
+                        <span class="progress-bar-container">
+                            <span class="tooltip">{{ "%.2f"|format(song['valence']) }}</span>
+                            <span class="progress-bar" style="--progress: {{ song['valence'] * 100 }}%;"></span>
+                        </span>
+                    </p>                    
         
                     <p><strong>Mode:</strong> 
                         {% if song['mode'] == 1 %} Major {% else %} Minor {% endif %}

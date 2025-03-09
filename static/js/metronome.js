@@ -11,8 +11,8 @@ const subtractBeats = document.querySelector('.subtract-beats');
 const addBeats = document.querySelector('.add-beats');
 const measureCount = document.querySelector('.measure-count');
 
-const click1 = new Audio('static/audio/Perc_MetronomeQuartz_hi.mp3');
-const click2 = new Audio('static/audio/Perc_MetronomeQuartz_lo.mp3');
+const click1 = new Audio('static/audio/Perc_MetronomeQuartz_hi2.mp3');
+const click2 = new Audio('static/audio/Perc_MetronomeQuartz_lo2.mp3');
 
 let bpm = 140;
 let beatsPerMeasure = 4;

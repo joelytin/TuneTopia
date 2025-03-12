@@ -200,3 +200,53 @@ section {
 .info-box li {
    margin-bottom: 6px;
 }
+
+/* Filter Container */
+.filters {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   gap: 1rem;
+   margin-bottom: 1.5rem;
+   background: #ffffff;
+   padding: 1rem;
+   border-radius: 12px;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+   width: 100%;
+   max-width: 800px;
+}
+
+/* Filter Label */
+.filters label {
+   font-size: 1rem;
+   font-weight: bold;
+   font-family: 'Montserrat', sans-serif;
+   color: #444;
+}
+
+/* Filter Dropdown */
+.filters select {
+   background: #f5f5f5;
+   border: none;
+   padding: 8px 12px;
+   font-size: 1rem;
+   border-radius: 8px;
+   cursor: pointer;
+   transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+   outline: none;
+}
+
+/* Hover & Focus Effects */
+.filters select:hover,
+.filters select:focus {
+   background: #e0e0e0;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Filter Layout (Stack on small screens) */
+@media (max-width: 600px) {
+   .filters {
+      flex-direction: column;
+      align-items: stretch;
+   }
+}

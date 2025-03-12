@@ -7,6 +7,24 @@
 <section>
     <h2 class="title">Your Recommended Tracks</h2>
 
+    <!-- Filters Section -->
+    <div class="filters">
+        <label for="genre-filter">Genre:</label>
+        <select id="genre-filter" onchange="filterTracks()">
+            <option value="all">All</option>
+            {% for genre in recommendations | map(attribute='track_genre') | unique %}
+            <option value="{{ genre }}">{{ genre }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="mode-filter">Mode:</label>
+        <select id="mode-filter" onchange="filterTracks()">
+            <option value="all">All</option>
+            <option value="Major">Major</option>
+            <option value="Minor">Minor</option>
+        </select>
+    </div>
+
     <!-- Info Icon -->
     <div class="info-icon" onclick="toggleInfo()">
         <i class="fa fa-info-circle" style="font-size:25px;color:#00A6ED"></i>
@@ -28,7 +46,8 @@
         {% if recommendations %}
         <div class="track-cards">
             {% for song in recommendations %}
-            <div class="track-card">
+            <div class="track-card" data-genre="{{ song['track_genre'] }}" 
+                data-mode="{% if song['mode'] == 1 %}Major{% else %}Minor{% endif %}">
                 <div class="track-card-header">
                     <strong>{{ song['track_name'] }}</strong> - {{ (song['artists']).replace(';', ', ') }}
                 </div>
@@ -80,6 +99,29 @@
         var infoBox = document.getElementById("infoBox");
         infoBox.classList.toggle("active");
     }
+
+    function filterTracks() {
+        let genreFilter = document.getElementById("genre-filter").value;
+        let modeFilter = document.getElementById("mode-filter").value;
+        
+        // Get all track cards
+        let trackCards = document.querySelectorAll(".track-card");
+
+        trackCards.forEach(card => {
+            let genre = card.getAttribute("data-genre");
+            let mode = card.getAttribute("data-mode");
+
+            let genreMatch = (genreFilter === "all" || genre === genreFilter);
+            let modeMatch = (modeFilter === "all" || mode === modeFilter);
+
+            // Show or hide based on filter match
+            if (genreMatch && modeMatch) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+    });
+}
 </script>
 
 {% endblock %}

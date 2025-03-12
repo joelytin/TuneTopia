@@ -35,7 +35,9 @@
                 </div>
                 <div class="track-card-body">
                     <p><strong>Genre:</strong> {{ song['track_genre'] }}</p>
-                    <p><strong>Key:</strong> {{ song['key'] }}</p>
+                    <p><strong>Key:</strong> {{ song['key'] }} 
+                        {% if song['mode'] == 1 %} Major {% else %} Minor {% endif %}
+                    </p>                    
                     <p><strong>Tempo:</strong> {{ song['tempo']|round|int }} BPM</p>
                     
                     <p><strong>Energy:</strong> 
@@ -59,9 +61,6 @@
                         </span>
                     </p>                    
         
-                    <p><strong>Mode:</strong> 
-                        {% if song['mode'] == 1 %} Major {% else %} Minor {% endif %}
-                    </p>
                     <p><strong>Loudness:</strong> {{ "%.2f"|format(song['loudness']) }} dB</p>
                     <p><strong>Time Signature:</strong> {{ song['time_signature'] }}/4</p>
                 </div>

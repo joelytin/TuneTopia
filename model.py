@@ -18,7 +18,8 @@ scaler = StandardScaler()
 df[features] = scaler.fit_transform(df[features])
 
 # Handle missing genre values
-df['track_genre'].fillna('', inplace=True)
+# df['track_genre'].fillna('', inplace=True)
+df.fillna({'track_genre': ''}, inplace=True)
 
 # Use TF-IDF to create genre embeddings
 vectorizer = TfidfVectorizer()
@@ -66,6 +67,9 @@ def recommend_songs(artist_name, df=df, features=features, num_songs=15, alpha=0
    df['cosine_similarity'] = cosine_similarities
    df['genre_weight'] = genre_similarities
    df['key_similarity'] = key_similarities
+
+   # Convert normalized values back to original scale
+   df[features] = scaler.inverse_transform(df[features])
 
    # Filter out original artist's songs and remove duplicates
    recommended_songs = df.query('artists.str.lower() != @artist_name.lower()').sort_values('final_score', ascending=False)

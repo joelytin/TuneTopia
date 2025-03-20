@@ -1,12 +1,10 @@
 import pandas as pd
-import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import PCA # Principal Component Analysis. To simplify complex data by reducing its features (cols) while keeping the most important info.
 from sklearn.metrics import ndcg_score
 from scipy.stats import entropy
-import joblib
 
 df = pd.read_csv("data/huggingface.csv")
 
@@ -99,5 +97,6 @@ def evaluate_model(recommended_songs, input_genre, num_songs=15):
       "Precision@10": precision_at_10,
       "NDCG": ndcg,
       "Diversity": diversity,
-      "Recommended Songs": recommended_songs[['track_name', 'artists', 'track_genre', 'final_score', 'key', 'tempo', 'danceability', 'acousticness']]
+      "Recommended Songs": recommended_songs[['track_name', 'artists', 'track_genre', 'final_score',
+                                              'key', 'tempo', 'danceability', 'acousticness']]
    }

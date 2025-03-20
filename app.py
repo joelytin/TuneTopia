@@ -32,7 +32,10 @@ for _, row in dataset.iterrows():
 
 # Compute the average popularity for each artist
 for artist in artist_popularity:
-   artist_popularity[artist] = artist_popularity[artist]['popularity'] / artist_popularity[artist]['count']
+   if artist_popularity[artist]['count'] > 0:
+      artist_popularity[artist] = artist_popularity[artist]['popularity'] / artist_popularity[artist]['count']
+   else:
+      artist_popularity[artist] = 0  # Set default value to avoid division error
 
 # Extract unique artist names
 unique_artists = set(artist_popularity.keys())
@@ -60,21 +63,38 @@ def recommend():
 
    elif request.method == 'POST':
       artist_name = request.form.get('artist', '').strip()
-      alpha = float(request.form.get('alpha', 0.5))  # Default to 0.5 if not provided
-      num_songs = int(request.form.get('num_songs', 15))  # Default to 15
+
+      try:
+         alpha = float(request.form.get('alpha', 0.5))  # Default to 0.5 if not provided
+         num_songs = int(request.form.get('num_songs', 15))  # Default to 15
+      except ValueError:
+         return render_template("recommend.html", error="Invalid input for alpha or number of songs.")
+      
+      if alpha is None or not (0.0 <= alpha <= 1.0) or num_songs not in [5, 10, 15, 20]:
+        return render_template("recommend.html", error="Invalid input for alpha or number of songs.")
 
       if not artist_name:
          return render_template("recommend.html", error="Please enter an artist name.")
+   
+      if alpha < 0 or alpha > 1:
+        return render_template("recommend.html", error="Alpha must be between 0 and 1.")
+   
+      if num_songs <= 0 or num_songs > 20:
+        return render_template("recommend.html", error="Please select between 1 and 20 songs.")
 
       recommended_songs = recommend_songs(artist_name, df, num_songs=num_songs, alpha=alpha)
 
       if recommended_songs is None:
          return render_template("recommend.html", error="Artist not found in the dataset.")
+      
+      # Check if artist exists in dataset
+      artist_tracks = df[df['artists'].str.contains(artist_name, case=False, na=False)]
+
+      if artist_tracks.empty:
+         return render_template("recommend.html", error="Artist not found in the dataset.")
 
       input_genre = df[df['artists'].str.contains(artist_name, case=False, na=False)].iloc[0]['track_genre']
       evaluation_results = evaluate_model(recommended_songs, input_genre, num_songs)
-
-      # print(type(recommended_songs['artists']), recommended_songs['artists'])
 
       return render_template("result.html",
                               artist_name=artist_name,
@@ -90,7 +110,7 @@ def metronome():
 def search_artists():
    query = request.args.get('query', '').strip().lower()
    if not query:
-      return jsonify([])
+      return jsonify({"error": "Query parameter is required."}), 400
 
    # Normalise spaces in query (replace multiple spaces with a single space)
    normalized_query = re.sub(r'\s+', ' ', query)

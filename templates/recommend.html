@@ -1,6 +1,8 @@
 {% extends "base.html" %} 
 {% block content %}
 
+<p id="test-indicator" style="display: none;">Recommend page loaded</p>
+
 <link rel="stylesheet" href="{{ url_for('static', filename='css/recommend-styles.css') }}" />
 
 <section>
@@ -30,6 +32,12 @@
                 <option value="20">20</option>
             </select>
         </div>
+
+        {% if error %}
+            <div class="error-message">
+                <p id="error-indicator">{{ error }}</p>
+            </div>
+        {% endif %}
     
         <div class="btn-container">
             <button type="submit" class="generate-btn" id="generate-btn">Generate</button>

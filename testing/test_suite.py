@@ -75,7 +75,7 @@ class TestSuite():
     WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.LINK_TEXT, "Metronome"))).click()
     
     slider = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".slider")))
-    slider.send_keys("75")
+    slider.send_keys("150")
     
     tempo_value = self.driver.find_element(By.CSS_SELECTOR, ".slider").get_attribute("value")
     assert tempo_value == "150", f"Expected 150, but got {tempo_value}"

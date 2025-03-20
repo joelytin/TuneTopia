@@ -16,27 +16,17 @@ scaler = StandardScaler()
 df[features] = scaler.fit_transform(df[features])
 
 # Handle missing genre values
-df['track_genre'] = df['track_genre'].fillna('')
+# df['track_genre'].fillna('', inplace=True)
+df.fillna({'track_genre': ''}, inplace=True)
 
 # Use TF-IDF to create genre embeddings
 vectorizer = TfidfVectorizer()
-genres = df['track_genre'].unique()
-genre_embeddings = vectorizer.fit_transform(genres)  # Convert genres to vectors
-
-# Store embeddings as dense NumPy arrays
-genre_embedding_dict = {genre: vector.toarray().flatten() for genre, vector in zip(genres, genre_embeddings)}
-
-# Compute genre similarity
-def compute_genre_weight(genre1, genre2):
-   if genre1 not in genre_embedding_dict or genre2 not in genre_embedding_dict:
-      return 0  # If missing, assign similarity of 0
-   return cosine_similarity(genre_embedding_dict[genre1].reshape(1, -1),
-                           genre_embedding_dict[genre2].reshape(1, -1))[0][0]
+genre_embeddings = vectorizer.fit_transform(df['track_genre'])
+genre_embedding_array = genre_embeddings.toarray()  # Convert to dense NumPy array
 
 # Reduce feature space using PCA to remove redundancy
 pca = PCA(n_components=5) # Reduce to 5 key components
-df_pca = pca.fit_transform(df[features]) # Transform dataset features
-df_pca = pd.DataFrame(df_pca, index=df.index) # Convert back to DataFrame
+df_pca = pca.fit_transform(df[features])  # Transform dataset features
 
 # Define musical key mapping
 key_mapping = {
@@ -50,37 +40,45 @@ def recommend_songs(artist_name, df=df, features=features, num_songs=15, alpha=0
    if artist_songs.empty:
       return None, "Artist not found in the dataset."
 
-   reference_vector = pca.transform(artist_songs[features]).mean(axis=0).reshape(1, -1)
-   df['cosine_similarity'] = cosine_similarity(reference_vector, df_pca)[0]
+   # Compute reference vector (avg PCA values)
+   reference_vector = pca.transform(artist_songs[features].to_numpy()).mean(axis=0, keepdims=True) 
+   # Compute cosine similarity in one step
+   cosine_similarities = cosine_similarity(reference_vector, df_pca)[0]
 
-   input_genre = artist_songs.iloc[0]['track_genre']
-   df['genre_weight'] = df['track_genre'].apply(lambda x: compute_genre_weight(input_genre, x))
+   # Compute genre similarity efficiently
+   input_genre_vector = vectorizer.transform([artist_songs.iloc[0]['track_genre']]).toarray()
+   genre_similarities = cosine_similarity(input_genre_vector, genre_embedding_array)[0]
 
-   # Add weighting factor for key/tempo similarity as some users might want harmonically compatible recommendations
-   df['key_similarity'] = (df['key'] == artist_songs.iloc[0]['key']).astype(int)
+   # Compute key similarity
+   input_key = artist_songs.iloc[0]['key']
+   key_similarities = (df['key'].to_numpy() == input_key).astype(int)
+   
+   final_scores = (alpha * cosine_similarities) + \
+                  ((1 - alpha) * genre_similarities) + \
+                  (0.1 * key_similarities)
 
-   # Weighted similarity score
-   df['final_score'] = (alpha * df['cosine_similarity']) + \
-                     ((1 - alpha) * df['genre_weight']) + \
-                     (0.1 * df['key_similarity'])
+   # Normalize scores to range 0-1
+   final_scores = (final_scores - final_scores.min()) / (final_scores.max() - final_scores.min())
 
-   df['final_score'] = (df['final_score'] - df['final_score'].min()) / \
-                     (df['final_score'].max() - df['final_score'].min()) # Ensure final_score is between 0-1
+   # Store results in DataFrame for sorting
+   df['final_score'] = final_scores
+   df['cosine_similarity'] = cosine_similarities
+   df['genre_weight'] = genre_similarities
+   df['key_similarity'] = key_similarities
 
-   # Sort by final score
-   recommended_songs = df[df['artists'].str.lower() != artist_name.lower()].sort_values(by='final_score', ascending=False)
+   # Convert normalized values back to original scale
+   df[features] = scaler.inverse_transform(df[features])
 
-   # Remove duplicate track names, keeping the one with the highest score
+   # Filter out original artist's songs and remove duplicates
+   recommended_songs = df.query('artists.str.lower() != @artist_name.lower()').sort_values('final_score', ascending=False)
    recommended_songs = recommended_songs.drop_duplicates(subset=["track_name", "artists"])
 
-   recommended_songs['key'] = recommended_songs['key'].map(key_mapping) # Map numeric key values to musical notes
+   # Map numeric keys to musical notes
+   recommended_songs['key'] = recommended_songs['key'].map(key_mapping)
 
-   recommended_songs = recommended_songs.head(num_songs).copy()  # Copy only necessary rows
-   recommended_songs['artists'] = recommended_songs['artists'].astype(str)  # Convert only required rows
-
-   return recommended_songs[['track_name', 'artists', 'track_genre', 'cosine_similarity', 
-                          'final_score', 'key', 'tempo', 'danceability', 'acousticness', 
-                          'valence', 'energy', 'popularity', 'mode', 'loudness', 'time_signature']]
+   return recommended_songs.head(num_songs)[['track_name', 'artists', 'track_genre', 'cosine_similarity',
+                                             'final_score', 'key', 'tempo', 'danceability', 'acousticness',
+                                             'valence', 'energy', 'popularity', 'mode', 'loudness', 'time_signature']]
 
 def evaluate_model(recommended_songs, input_genre, num_songs=15):
    mean_cosine_similarity = recommended_songs['cosine_similarity'].mean()

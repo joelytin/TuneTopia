@@ -7,3 +7,5 @@ fuzzywuzzy
 scikit-learn
 scipy
 numpy
+pytest
+pytest-mock

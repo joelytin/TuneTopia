@@ -3,15 +3,14 @@
 import pytest
 import sys
 import os
-import pandas as pd
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from model import recommend_songs, evaluate_model, df
+from model import recommend_songs, evaluate_model
 
 # Suppress Sklearn warnings globally
 pytestmark = pytest.mark.filterwarnings("ignore::UserWarning")
 
 TEST_ARTIST = "Aespa".lower()  # artist in dataset
-FAKE_ARTIST = "Unknown Artist 123" # artise not in dataset
+FAKE_ARTIST = "Unknown Artist 123" # artist not in dataset
 
 
 ### Test if recommend_songs returns valid results for an existing artist

@@ -16,7 +16,6 @@ scaler = StandardScaler()
 df[features] = scaler.fit_transform(df[features])
 
 # Handle missing genre values
-# df['track_genre'].fillna('', inplace=True)
 df.fillna({'track_genre': ''}, inplace=True)
 
 # Use TF-IDF to create genre embeddings
@@ -83,7 +82,7 @@ def recommend_songs(artist_name, df=df, features=features, num_songs=15, alpha=0
 def evaluate_model(recommended_songs, input_genre, num_songs=15):
    mean_cosine_similarity = recommended_songs['cosine_similarity'].mean()
    precision_at_10 = (recommended_songs['track_genre'] == input_genre).sum() / num_songs
-   total_relevant_items = df[df['track_genre'] == input_genre].shape[0]
+   
    relevance_scores = (recommended_songs['track_genre'] == input_genre).astype(int)
    ndcg = ndcg_score([relevance_scores], [recommended_songs['final_score']])
 

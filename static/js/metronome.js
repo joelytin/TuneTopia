@@ -98,17 +98,19 @@ function updateMetronome() {
     tempoDisplay.textContent = bpm;
     tempoSlider.value = bpm;
     metronome.timeInterval = 60000 / bpm;
-    if (bpm <= 40) { tempoTextString = "Super Slow" };
-    if (bpm > 40 && bpm < 80) { tempoTextString = "Slow" };
-    if (bpm > 80 && bpm < 120) { tempoTextString = "Getting there" };
-    if (bpm > 120 && bpm < 180) { tempoTextString = "Nice and Steady" };
-    if (bpm > 180 && bpm < 220) { tempoTextString = "Rock n' Roll" };
-    if (bpm > 220 && bpm < 240) { tempoTextString = "Funky Stuff" };
-    if (bpm > 240 && bpm < 260) { tempoTextString = "Relax Dude" };
-    if (bpm > 260 && bpm <= 280) { tempoTextString = "Eddie Van Halen" };
+    
+    if (bpm <= 40) { tempoTextString = "Grave (Very Slow)" };
+    if (bpm > 40 && bpm <= 60) { tempoTextString = "Largo (Broad and Slow)" };
+    if (bpm > 60 && bpm <= 76) { tempoTextString = "Adagio (Slow and Expressive)" };
+    if (bpm > 76 && bpm <= 108) { tempoTextString = "Andante (Walking Speed)" };
+    if (bpm > 108 && bpm <= 120) { tempoTextString = "Moderato (Moderate Tempo)" };
+    if (bpm > 120 && bpm <= 168) { tempoTextString = "Allegro (Fast and Lively)" };
+    if (bpm > 168 && bpm <= 200) { tempoTextString = "Presto (Very Fast)" };
+    if (bpm > 200 && bpm <= 280) { tempoTextString = "Prestissimo (Extremely Fast)" };
 
     tempoText.textContent = tempoTextString;
 }
+
 function validateTempo() {
     if (bpm <= 20) { return };
     if (bpm >= 280) { return };

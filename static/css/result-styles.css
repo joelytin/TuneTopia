@@ -244,9 +244,13 @@ section {
 }
 
 /* Responsive Filter Layout (Stack on small screens) */
-@media (max-width: 600px) {
+@media (max-width: 900px) {
    .filters {
       flex-direction: column;
       align-items: stretch;
+   }
+
+   .track-cards {
+      grid-template-columns: 1fr;  /* Force 1 column layout */
    }
 }

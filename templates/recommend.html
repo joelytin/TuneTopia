@@ -17,7 +17,7 @@
 
         <div class="form-group">
             <label for="alpha">Genre Similarity Weight, α (0.0 - 1.0):</label>
-            <p class="note">Note: Closer to 0 favours genre similarity. Closer to 1 favours audio feature similarity.</p>
+            <p class="note">Tip: Move towards 0 to get songs similar in genre/style. <br>Move towards 1 to get songs similar in sound (e.g., mood, energy).</p>
             
             <input type="range" id="alpha" name="alpha" min="0.0" max="1.0" step="0.1" value="0.5" oninput="updateAlphaValue(this.value)">
             <span id="alpha-value">0.5</span>

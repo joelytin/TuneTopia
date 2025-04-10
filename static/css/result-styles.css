@@ -254,3 +254,19 @@ section {
       grid-template-columns: 1fr;  /* Force 1 column layout */
    }
 }
+
+.card-bottom {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+}
+
+.preview-btn {
+   background-color: #FF0033;
+   color: #FFFFFF;
+   padding: 1.2rem;
+   text-align: center;
+   text-decoration: none;
+   font-weight: bold;
+   border-radius: 50px;
+}

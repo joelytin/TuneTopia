@@ -1,4 +1,4 @@
-,track_id,artists,album_name,track_name,popularity,duration_ms,explicit,danceability,energy,key,loudness,mode,speechiness,acousticness,instrumentalness,liveness,valence,tempo,time_signature,track_genre
+,track_id,artists,album_name,track_name,popularity,duration_ms,explicit,danceability,energy,key,loudness,mode,speechiness,acousticness,instrumentalness,liveness,valence,tempo,time_signature,track_genre,youtube_url
 0,5SuOikwiRyPMVoIQDJUgSV,Gen Hoshino,Comedy,Comedy,73,230666,False,0.676,0.461,1,-6.746,0,0.143,0.0322,1.01e-06,0.358,0.715,87.917,4,acoustic
 1,4qPNDBW1i3p13qLCt0Ki3A,Ben Woodward,Ghost (Acoustic),Ghost - Acoustic,55,149610,False,0.42,0.166,1,-17.235,1,0.0763,0.924,5.56e-06,0.101,0.267,77.489,4,acoustic
 2,1iJBSr7s7jYXzM8EGcbK5b,Ingrid Michaelson;ZAYN,To Begin Again,To Begin Again,57,210826,False,0.438,0.359,0,-9.734,1,0.0557,0.21,0.0,0.117,0.12,76.332,4,acoustic
@@ -33288,8 +33288,8 @@
 33286,5nXr1lGKGDKcnBkjosJzpo,NX Zero,Em Comum,Maré,44,240413,False,0.6,0.938,6,-2.781,0,0.0326,0.0136,1.15e-06,0.0975,0.65,130.057,4,emo
 33287,33Y1jukFR76pj7TXFTHQBJ,Fresno,Revanche,Porto Alegre,44,227973,False,0.405,0.76,5,-4.283,0,0.0332,0.0985,0.0,0.382,0.181,79.911,4,emo
 33288,4r5Z0E4EGbaDni0sX4cBwG,PXNDX,La Revancha Del Principe Charro,Quisiera No Pensar,44,203133,False,0.498,0.983,1,-3.495,1,0.115,0.00402,0.0,0.0817,0.319,105.535,4,emo
-33289,3UIx2TTrnyoFkE2jVAzFTN,For Revenge,Second Chance,Lentera,43,243853,False,0.468,0.935,9,-4.662,1,0.0835,0.0673,0.108,0.113,0.335,149.998,4,emo
-33290,5gUINRqrT8H4rI13ulJg39,Pee Wee Gaskins;Alditsa Decca Nugraha;Reza Satiri;Fauzan;Harry Pramahardika;Renaldy Prasetya,A Youth Not Wasted,Berbagi Cerita,43,278850,False,0.497,0.922,9,-3.51,1,0.0622,0.00532,0.00118,0.137,0.691,149.957,4,emo
+33289,3UIx2TTrnyoFkE2jVAzFTN,For Revenge,Second Chance,Lentera,43,243853,False,0.468,0.935,9,-4.662,1,0.0835,0.0673,0.108,0.113,0.335,149.998,4,emo,https://www.youtube.com/watch?v=Ilu7zBC16Kw
+33290,5gUINRqrT8H4rI13ulJg39,Pee Wee Gaskins;Alditsa Decca Nugraha;Reza Satiri;Fauzan;Harry Pramahardika;Renaldy Prasetya,A Youth Not Wasted,Berbagi Cerita,43,278850,False,0.497,0.922,9,-3.51,1,0.0622,0.00532,0.00118,0.137,0.691,149.957,4,emo,https://www.youtube.com/watch?v=uEqEdvFUL28
 33291,4EYK0suibSo3Fl7RawPChQ,For Revenge,Perayaan Patah Hati - Babak 1,Jeda,43,238000,False,0.411,0.73,11,-6.555,0,0.0572,0.0161,0.0028,0.104,0.128,139.698,4,emo
 33292,2W3QTyPSI5Zg1a4Cm3UMvd,PXNDX,La Revancha Del Principe Charro,Ando Pedo Y Ella Esta Aqui,44,215306,False,0.519,0.938,6,-3.415,1,0.0624,0.0015,0.0,0.103,0.547,132.522,4,emo
 33293,7fC8yji6KpWf1snZh1bf9h,PXNDX,La Revancha Del Principe Charro,Corazon De Un Cuento Roto,43,225626,False,0.546,0.975,8,-3.211,1,0.0609,0.00162,1.69e-06,0.103,0.689,115.917,4,emo
@@ -33476,7 +33476,7 @@
 33474,19uA0MIGsb1xmR19yx8oTr,GARZI,Demonstrate,Demonstrate,56,129517,True,0.586,0.786,10,-4.892,1,0.0686,0.0177,0.0,0.233,0.463,82.557,4,emo
 33475,14PlDNjNh3pXyHXzkhX8n5,6ix9ine;Fetty Wap;A Boogie Wit da Hoodie,Day69: Graduation Day,KEKE,60,151914,True,0.599,0.857,7,-5.7,1,0.299,0.0321,0.0,0.4,0.469,187.985,4,emo
 33476,5LAVhynnTmj9VJjW8xGZdP,Lil Peep,crybaby,ghost girl,66,173946,True,0.52,0.823,2,-7.069,1,0.0577,0.281,5.9e-06,0.125,0.317,80.035,4,emo
-33477,2AmRjWxvLxJK3DjCYNruLI,RADWIMPS;Toko Miura,Weathering With You,Celebration (Movie Edit) [feat. Toko Miura],48,156160,False,0.511,0.923,9,-2.554,1,0.0867,0.142,0.0,0.172,0.765,152.034,4,emo
+33477,2AmRjWxvLxJK3DjCYNruLI,RADWIMPS;Toko Miura,Weathering With You,Celebration (Movie Edit) [feat. Toko Miura],48,156160,False,0.511,0.923,9,-2.554,1,0.0867,0.142,0.0,0.172,0.765,152.034,4,emo,https://www.youtube.com/watch?v=0JuI1v1eIuM
 33478,29VVYrV5TVpGu0IfoTXlcw,ONE OK ROCK,Renegades,Renegades,55,244538,False,0.536,0.857,5,-4.254,0,0.0614,0.000849,0.000151,0.152,0.332,153.943,4,emo
 33479,5C6UoWO8yA33mdkRTv2Pdg,Josh A;Lil Revive,Disgrace,Darkness,54,112076,True,0.804,0.521,10,-7.753,1,0.0605,0.534,0.0,0.247,0.648,90.032,4,emo
 33480,0UY4FvG4f9JI6kBR1BlWrZ,Paramore,Riot!,That's What You Get,68,220480,False,0.528,0.831,8,-3.607,1,0.0429,9.43e-05,0.0,0.141,0.632,131.094,3,emo
@@ -33741,7 +33741,7 @@
 33739,2wwt8L5PZJNW9U1gR63PeT,NX Zero,Sintonia / Nessa Cidade,Sintonia,36,183485,False,0.452,0.669,3,-7.419,1,0.0465,0.0141,2.85e-05,0.0864,0.399,84.401,4,emo
 33740,3DLPg2D9Q6XZ4RlUU9B00r,PXNDX,Bonanza,"Ilusión, Oh ilusión",36,291280,False,0.345,0.622,8,-5.065,1,0.0293,0.0272,0.000155,0.0942,0.429,147.943,4,emo
 33741,6s2yqZbiPNPL1B2IeCMsUA,My Chemical Romance,The Black Parade,The End.,62,112920,False,0.292,0.548,2,-4.977,1,0.0363,0.0827,0.0,0.414,0.207,175.053,3,emo
-33742,1Rsc1mqqOFBKqzkF8GKPDt,Pee Wee Gaskins;Alditsa Decca Nugraha;Reza Satiri;Fauzan;Harry Pramahardika;Renaldy Prasetya,A Youth Not Wasted,Kertas Dan Pena,35,228794,False,0.411,0.946,9,-4.204,1,0.05,0.00271,2.27e-05,0.422,0.436,169.902,4,emo
+33742,1Rsc1mqqOFBKqzkF8GKPDt,Pee Wee Gaskins;Alditsa Decca Nugraha;Reza Satiri;Fauzan;Harry Pramahardika;Renaldy Prasetya,A Youth Not Wasted,Kertas Dan Pena,35,228794,False,0.411,0.946,9,-4.204,1,0.05,0.00271,2.27e-05,0.422,0.436,169.902,4,emo,https://www.youtube.com/watch?v=nEWUMQBXrjI
 33743,5MnOC1HvWEPWQiQubJV4uK,Sickbrain,KRÁLOVSTVÍ,KRÁLOVSTVÍ,35,163546,True,0.772,0.691,11,-6.744,0,0.208,0.238,0.0,0.344,0.69,120.072,4,emo
 33744,2og56jb9ZaAh1cVN7BENAq,Coheed and Cambria,The Color Before The Sun,Island,35,301906,True,0.496,0.991,9,-2.752,1,0.111,0.0106,0.000251,0.373,0.433,135.91,4,emo
 33745,58X91MDH5OmePcLM5Hpg2M,Schyzo,Tabu,Jednou Tě Zabijou,36,231653,True,0.58,0.444,2,-9.43,1,0.407,0.187,0.0,0.121,0.426,81.681,4,emo
@@ -33929,7 +33929,7 @@
 33927,32HzLojF1gTmkYiHlyyoWZ,Zuris,50-50,Den,34,169115,True,0.826,0.617,8,-5.815,1,0.0683,0.0115,0.0,0.102,0.563,107.971,4,emo
 33928,3axhnTsNa4YefoyLGxjdWz,XXXTENTACION;Ski Mask The Slump God,"XXXTENTACION Presents: Members Only, Vol. 3",Bowser,55,187653,True,0.8,0.491,10,-8.293,0,0.0468,0.309,0.0,0.332,0.425,135.008,4,emo
 33929,7bHF1evAhX18G3BdKLblFH,Milion Plus;Jickson,#hot16challenge2,YVGN (#hot16challenge2),34,92307,True,0.934,0.539,10,-9.253,0,0.29,0.0665,0.0,0.125,0.831,130.019,4,emo
-33930,1FOJO1cyl4AafEO3Hmi4S4,Koyo;Life's Question,Drives Out East,Diamond One,32,181546,True,0.483,0.942,9,-6.907,1,0.136,7.19e-05,0.0,0.345,0.362,100.185,4,emo
+33930,1FOJO1cyl4AafEO3Hmi4S4,Koyo;Life's Question,Drives Out East,Diamond One,32,181546,True,0.483,0.942,9,-6.907,1,0.136,7.19e-05,0.0,0.345,0.362,100.185,4,emo,https://www.youtube.com/watch?v=6CA-ecN46KA
 33931,2cViIXIe8Pbd1sOJExMJlK,My Chemical Romance,Three Cheers for Sweet Revenge,Cemetery Drive,65,188066,False,0.548,0.888,1,-4.861,0,0.0362,0.000902,0.00172,0.0943,0.655,115.993,4,emo
 33932,1fs21IqOwL6zsdOdWUOcM2,Disme;Nebbia,Malverde,Freddo,34,168512,True,0.724,0.691,1,-7.512,0,0.224,0.0243,0.0,0.116,0.182,97.621,4,emo
 33933,5CsOPVQmxU5ze2StUQziHJ,Dominik Grey,Tomorrow Never Dies,Honey,33,122084,False,0.659,0.576,11,-7.18,1,0.314,0.698,0.0,0.0985,0.249,173.024,4,emo
@@ -48084,7 +48084,7 @@
 48082,7LS9Fhrr9TdKZW9ow444uS,Das EFX,The Hip Hop Collection,Real Hip-Hop,0,247613,False,0.858,0.76,4,-7.895,0,0.254,0.0217,0.0,0.322,0.951,93.083,4,hardcore
 48083,1byF0hyfCXcs0ob63GgU6v,Das EFX,Rap Homage,Real Hip-Hop,0,247613,False,0.858,0.76,4,-7.895,0,0.254,0.0217,0.0,0.322,0.951,93.083,4,hardcore
 48084,66orjI5vOkyxOZLHWrPklh,DMX,Grand Champ,X Gon' Give It To Ya - Int'l Bonus track,62,219733,False,0.754,0.825,10,-5.366,0,0.194,0.039,0.0,0.0744,0.64,95.073,4,hardcore
-48085,3UIx2TTrnyoFkE2jVAzFTN,For Revenge,Second Chance,Lentera,43,243853,False,0.468,0.935,9,-4.662,1,0.0835,0.0673,0.108,0.113,0.335,149.998,4,hardcore
+48085,3UIx2TTrnyoFkE2jVAzFTN,For Revenge,Second Chance,Lentera,43,243853,False,0.468,0.935,9,-4.662,1,0.0835,0.0673,0.108,0.113,0.335,149.998,4,hardcore,https://www.youtube.com/watch?v=Ilu7zBC16Kw
 48086,3kBV8olpppGCIbhrh8TV6o,Koil,Blacklight,Aku Lupa Aku Luka,43,271268,False,0.485,0.949,10,-6.962,1,0.0423,0.000257,0.399,0.288,0.204,82.018,4,hardcore
 48087,30jlxG2YSuMK1CCmp1XSMl,Run–D.M.C.,Le monde de demain (Bande originale de la série),Proud to Be Black,5,195893,False,0.832,0.734,11,-9.165,1,0.463,0.00823,0.0,0.242,0.909,170.065,4,hardcore
 48088,2poYxkpq3Nhn45lwwcLAYS,LL COOL J;Fat Joe;Foxy Brown;Keith Murray;Prodigy,The Best 90s Hip Hop Hits,I Shot Ya - Remix,0,304973,False,0.54,0.837,9,-5.405,1,0.463,0.349,0.0,0.0733,0.616,174.207,4,hardcore
@@ -48514,7 +48514,7 @@
 48512,6uzesxG4dlBg3faZmzL6Qs,Obie Trice,Cheers,The Setup,61,193000,True,0.908,0.738,1,-4.933,1,0.271,0.143,0.0,0.0829,0.79,95.954,4,hardcore
 48513,0vYB5bs4D2o9kN0tsu3FRn,Magnitude,To Whatever Fateful End,Defy,31,110181,False,0.432,0.984,8,-4.186,1,0.118,0.000262,0.00204,0.371,0.398,96.746,4,hardcore
 48514,6kCMI0NPb6EXKcWZVZm8Kh,Hail The Sun,Elephantitis - EP,Dead Messages,32,239160,True,0.27,0.866,11,-6.132,0,0.085,0.000408,3.31e-05,0.365,0.108,148.938,4,hardcore
-48515,1FOJO1cyl4AafEO3Hmi4S4,Koyo;Life's Question,Drives Out East,Diamond One,32,181546,True,0.483,0.942,9,-6.907,1,0.136,7.19e-05,0.0,0.345,0.362,100.185,4,hardcore
+48515,1FOJO1cyl4AafEO3Hmi4S4,Koyo;Life's Question,Drives Out East,Diamond One,32,181546,True,0.483,0.942,9,-6.907,1,0.136,7.19e-05,0.0,0.345,0.362,100.185,4,hardcore,https://www.youtube.com/watch?v=6CA-ecN46KA
 48516,7wmZbJw1H2LQWfxRQ4EZA6,InDharma,Players,Players,31,169663,False,0.542,0.941,1,-4.916,1,0.187,0.00749,0.0,0.319,0.597,151.911,4,hardcore
 48517,5PDUqXNuQQhhRwwA85EjE1,Dj Promo,Falta,Falta,30,69362,False,0.685,0.572,6,-8.112,1,0.0993,0.516,0.816,0.24,0.586,142.366,4,hardcore
 48518,5Q9xZAUfiWZLUHDYugcXN4,D-Ceptor,Warrior Elite,Warrior Elite,31,265599,False,0.325,0.993,7,-0.562,1,0.253,0.146,0.0589,0.548,0.216,181.978,4,hardcore
@@ -62612,7 +62612,7 @@
 62610,0ZiO07cHvb675UDaKB1iix,Aimer,Sun Dance,コイワズライ,61,235160,False,0.675,0.5,10,-5.825,1,0.0258,0.3,0.0,0.312,0.773,93.917,4,j-pop
 62611,4Ylqc711Eq763XbTAOABu3,Doris Day;Frank DeVol & His Orchestra,Doris Day - Her Greatest Songs,"Que Sera Sera (Whatever Will Be, Will Be) [From ""The Man Who Knew Too Much""] (with Frank DeVol & His Orchestra)",51,124880,False,0.4,0.422,9,-9.16,1,0.0379,0.855,0.0,0.722,0.743,175.838,4,j-pop
 62612,4zrKPIygugUDKGFEjVwpSB,Official HIGE DANdism,Subtitle,Subtitle,53,305509,False,0.649,0.683,6,-6.49,1,0.0424,0.0313,0.0,0.118,0.381,130.0,4,j-pop
-62613,2AmRjWxvLxJK3DjCYNruLI,RADWIMPS;Toko Miura,Weathering With You,Celebration (Movie Edit) [feat. Toko Miura],48,156160,False,0.511,0.923,9,-2.554,1,0.0867,0.142,0.0,0.172,0.765,152.034,4,j-pop
+62613,2AmRjWxvLxJK3DjCYNruLI,RADWIMPS;Toko Miura,Weathering With You,Celebration (Movie Edit) [feat. Toko Miura],48,156160,False,0.511,0.923,9,-2.554,1,0.0867,0.142,0.0,0.172,0.765,152.034,4,j-pop,https://www.youtube.com/watch?v=0JuI1v1eIuM
 62614,08oWhY5M3huYiiFhv2pKcc,Maoli,Sense of Purpose,Mercy,54,194000,False,0.717,0.524,5,-6.078,1,0.0724,0.0751,8.57e-06,0.103,0.266,75.007,3,j-pop
 62615,3FUCuf498nFHJXFYR1V9Bd,YOASOBI,三原色,三原色,64,224066,False,0.443,0.893,5,-3.496,0,0.154,0.128,0.0,0.328,0.826,127.999,4,j-pop
 62616,7qD46MYIys25wU6oKrW7LB,SPITZ,CYCLE HIT 1991-1997 Spitz Complete Single Collection,スパイダー,37,225680,False,0.625,0.85,4,-4.667,1,0.0295,0.291,2.44e-06,0.0966,0.617,126.937,4,j-pop
@@ -63265,7 +63265,7 @@
 63263,4zrKPIygugUDKGFEjVwpSB,Official HIGE DANdism,Subtitle,Subtitle,53,305509,False,0.649,0.683,6,-6.49,1,0.0424,0.0313,0.0,0.118,0.381,130.0,4,j-rock
 63264,4NaaF28BeO9WzjDrSS71Nz,Mrs. GREEN APPLE,ダンスホール,ダンスホール,77,203149,False,0.736,0.695,7,-3.87,1,0.0468,0.0209,0.0,0.0517,0.784,109.976,4,j-rock
 63265,2nJw7Vz6VTGuxrtYWGChbZ,Plini,Other Things,Selenium Forest,48,365641,False,0.472,0.72,3,-7.719,0,0.0383,0.0658,0.9,0.284,0.36,149.97,1,j-rock
-63266,2AmRjWxvLxJK3DjCYNruLI,RADWIMPS;Toko Miura,Weathering With You,Celebration (Movie Edit) [feat. Toko Miura],48,156160,False,0.511,0.923,9,-2.554,1,0.0867,0.142,0.0,0.172,0.765,152.034,4,j-rock
+63266,2AmRjWxvLxJK3DjCYNruLI,RADWIMPS;Toko Miura,Weathering With You,Celebration (Movie Edit) [feat. Toko Miura],48,156160,False,0.511,0.923,9,-2.554,1,0.0867,0.142,0.0,0.172,0.765,152.034,4,j-rock,https://www.youtube.com/watch?v=0JuI1v1eIuM
 63267,0vIVLPuiWbtufH0lnkY1Zn,KANKAKU PIERO,Rakugakipeiji,Rakugakipeiji,52,203495,False,0.325,0.968,1,-4.47,1,0.156,0.00677,0.0258,0.183,0.364,184.085,4,j-rock
 63268,1JLi1LOHt6dDTiMrwejsd1,GReeeeN,愛し君へ,愛し君へ,38,257853,False,0.499,0.823,9,-2.909,1,0.0551,0.226,0.0,0.369,0.548,158.124,4,j-rock
 63269,1Jwc3ODLQxtbnS8M9TflSP,The Bangles,The Essential Bangles,Walk Like an Egyptian,63,204706,False,0.724,0.891,11,-7.818,1,0.0995,0.00344,4.72e-05,0.3,0.818,103.022,4,j-rock
@@ -86372,7 +86372,7 @@
 86370,1yEBMvOYbhJJTX7x3iW41O,Soda Stereo,Comfort y Música Para Volar,Génesis - MTV Unplugged,44,515693,False,0.275,0.87,2,-4.787,1,0.156,0.0449,0.551,0.795,0.265,143.179,4,punk
 86371,5dF22TUprEIDwQAiXmX7hX,WhoMadeWho,Viaggi Astrali 2,Greyhound,0,238693,False,0.652,0.792,11,-5.771,0,0.0384,0.00608,0.261,0.0718,0.484,107.992,4,punk
 86372,1PGyfLQdgFPXGEtP2b6ovZ,Dibob,O Fantástico Mundo,1 X 0 Eu,43,220173,False,0.559,0.851,11,-5.199,1,0.0328,0.000964,0.0,0.228,0.515,116.964,4,punk
-86373,5gUINRqrT8H4rI13ulJg39,Pee Wee Gaskins;Alditsa Decca Nugraha;Reza Satiri;Fauzan;Harry Pramahardika;Renaldy Prasetya,A Youth Not Wasted,Berbagi Cerita,43,278850,False,0.497,0.922,9,-3.51,1,0.0622,0.00532,0.00118,0.137,0.691,149.957,4,punk
+86373,5gUINRqrT8H4rI13ulJg39,Pee Wee Gaskins;Alditsa Decca Nugraha;Reza Satiri;Fauzan;Harry Pramahardika;Renaldy Prasetya,A Youth Not Wasted,Berbagi Cerita,43,278850,False,0.497,0.922,9,-3.51,1,0.0622,0.00532,0.00118,0.137,0.691,149.957,4,punk,https://www.youtube.com/watch?v=uEqEdvFUL28
 86374,2U4MHuPfEpodUXGECdrR9N,PXNDX,Poetics,Agradable Locura Temporal,42,219200,False,0.582,0.952,1,-5.079,1,0.0677,0.00191,0.000118,0.164,0.522,105.98,4,punk
 86375,5rGvxTkDXn5lIuV7Qh2war,Klamydia,Klamydia,Pohjanmaalla,41,207266,False,0.39,0.975,7,-2.602,1,0.0373,0.00231,0.0,0.326,0.636,99.103,4,punk
 86376,2NXYLpZdCZ6qaqZlaMpDMd,Luis Alberto Spinetta,Mondo Di Cromo,No Te Alejes Tanto De Mí,45,209893,False,0.783,0.292,2,-18.026,1,0.0404,0.164,0.00185,0.153,0.696,120.802,4,punk

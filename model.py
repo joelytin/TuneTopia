@@ -77,7 +77,8 @@ def recommend_songs(artist_name, df=df, features=features, num_songs=15, alpha=0
 
    return recommended_songs.head(num_songs)[['track_name', 'artists', 'track_genre', 'cosine_similarity',
                                              'final_score', 'key', 'tempo', 'danceability', 'acousticness',
-                                             'valence', 'energy', 'popularity', 'mode', 'loudness', 'time_signature']]
+                                             'valence', 'energy', 'popularity', 'mode', 'loudness', 
+                                             'time_signature', 'youtube_url']]
 
 def evaluate_model(recommended_songs, input_genre, num_songs=15):
    mean_cosine_similarity = recommended_songs['cosine_similarity'].mean()

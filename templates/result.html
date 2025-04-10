@@ -84,8 +84,13 @@
                     <p><strong>Loudness:</strong> {{ "%.2f"|format(song['loudness']) }} dB</p>
                     <p><strong>Time Signature:</strong> {{ song['time_signature'] }}/4</p>
                 </div>
-                <div class="track-card-footer">
-                    <p><strong>Popularity:</strong> {{ song['popularity'] }}</p>
+                <div class="card-bottom">
+                    <div class="track-card-footer">
+                        <p><strong>Popularity:</strong> {{ song['popularity'] }}</p>
+                    </div>
+                    <div class="preview-btn-container">
+                        <a class="preview-btn" href="{{ song.youtube_url }}" target="_blank">Open in YouTube</a>
+                    </div>
                 </div>
             </div>
             {% endfor %}

@@ -1,4 +1,7 @@
 import pandas as pd
+import numpy as np
+import joblib
+import os
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -23,9 +26,15 @@ vectorizer = TfidfVectorizer()
 genre_embeddings = vectorizer.fit_transform(df['track_genre'])
 genre_embedding_array = genre_embeddings.toarray()  # Convert to dense NumPy array
 
-# Reduce feature space using PCA to remove redundancy
-pca = PCA(n_components=5) # Reduce to 5 key components
-df_pca = pca.fit_transform(df[features])  # Transform dataset features
+# Load or compute PCA
+if os.path.exists("data/df_pca.npy") and os.path.exists("data/pca_model.pkl"):
+   df_pca = np.load("data/df_pca.npy")
+   pca = joblib.load("data/pca_model.pkl")
+else:
+   pca = PCA(n_components=5)
+   df_pca = pca.fit_transform(df[features])
+   np.save("data/df_pca.npy", df_pca)
+   joblib.dump(pca, "data/pca_model.pkl")
 
 # Define musical key mapping
 key_mapping = {

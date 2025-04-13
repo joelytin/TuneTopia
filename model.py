@@ -6,7 +6,7 @@ from sklearn.decomposition import PCA # Principal Component Analysis. To simplif
 from sklearn.metrics import ndcg_score
 from scipy.stats import entropy
 
-df = pd.read_csv("data/huggingface.csv")
+df = pd.read_csv("data/huggingface.csv", low_memory=False)
 
 # Select features
 features = ['danceability', 'energy', 'valence', 'speechiness', 'acousticness', 'instrumentalness', 'liveness']

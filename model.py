@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import tracemalloc
 import joblib
-import psutil
 import os
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
@@ -39,10 +38,6 @@ else:
    df_pca = pca.fit_transform(df[features])
    np.save("data/df_pca.npy", df_pca)
    joblib.dump(pca, "data/pca_model.pkl")
-
-process = psutil.Process(os.getpid())
-mem = process.memory_info().rss / (1024 * 1024)  # in MB
-print(f"Memory usage: {mem:.2f} MB")
 
 # Define musical key mapping
 key_mapping = {
@@ -95,11 +90,6 @@ def recommend_songs(artist_name, df=df, features=features, num_songs=15, alpha=0
                                              'final_score', 'key', 'tempo', 'danceability', 'acousticness',
                                              'valence', 'energy', 'popularity', 'mode', 'loudness', 
                                              'time_signature', 'youtube_url']]
-
-current, peak = tracemalloc.get_traced_memory()
-print(f"Current memory usage: {current / 1024 / 1024:.2f} MB")
-print(f"Peak memory usage: {peak / 1024 / 1024:.2f} MB")
-tracemalloc.stop()
 
 def evaluate_model(recommended_songs, input_genre, num_songs=15):
    mean_cosine_similarity = recommended_songs['cosine_similarity'].mean()

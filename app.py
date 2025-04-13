@@ -126,4 +126,4 @@ def search_artists():
    return jsonify(matched_artists_info[:10])  # Limit to top 10 results for efficiency
 
 if __name__ == '__main__':
-   app.run(debug=True)
+   app.run()

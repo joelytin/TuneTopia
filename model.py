@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
+import tracemalloc
 import joblib
+import psutil
 import os
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
@@ -8,6 +10,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import PCA # Principal Component Analysis. To simplify complex data by reducing its features (cols) while keeping the most important info.
 from sklearn.metrics import ndcg_score
 from scipy.stats import entropy
+
+tracemalloc.start()
 
 df = pd.read_csv("data/huggingface.csv", low_memory=False)
 
@@ -35,6 +39,10 @@ else:
    df_pca = pca.fit_transform(df[features])
    np.save("data/df_pca.npy", df_pca)
    joblib.dump(pca, "data/pca_model.pkl")
+
+process = psutil.Process(os.getpid())
+mem = process.memory_info().rss / (1024 * 1024)  # in MB
+print(f"Memory usage: {mem:.2f} MB")
 
 # Define musical key mapping
 key_mapping = {
@@ -69,25 +77,29 @@ def recommend_songs(artist_name, df=df, features=features, num_songs=15, alpha=0
    final_scores = (final_scores - final_scores.min()) / (final_scores.max() - final_scores.min())
 
    # Store results in DataFrame for sorting
-   df['final_score'] = final_scores
-   df['cosine_similarity'] = cosine_similarities
-   df['genre_weight'] = genre_similarities
-   df['key_similarity'] = key_similarities
+   df_copy = df.copy()
+   df_copy['final_score'] = final_scores
+   df_copy['cosine_similarity'] = cosine_similarities
+   df_copy['genre_weight'] = genre_similarities
+   df_copy['key_similarity'] = key_similarities
 
-   # Convert normalized values back to original scale
-   df[features] = scaler.inverse_transform(df[features])
+   # Inverse transform features (still safe since df_copy is local)
+   df_copy[features] = scaler.inverse_transform(df_copy[features])
 
    # Filter out original artist's songs and remove duplicates
-   recommended_songs = df.query('artists.str.lower() != @artist_name.lower()').sort_values('final_score', ascending=False)
+   recommended_songs = df_copy.query('artists.str.lower() != @artist_name.lower()').sort_values('final_score', ascending=False)
    recommended_songs = recommended_songs.drop_duplicates(subset=["track_name", "artists"])
-
-   # Map numeric keys to musical notes
    recommended_songs['key'] = recommended_songs['key'].map(key_mapping)
 
    return recommended_songs.head(num_songs)[['track_name', 'artists', 'track_genre', 'cosine_similarity',
                                              'final_score', 'key', 'tempo', 'danceability', 'acousticness',
                                              'valence', 'energy', 'popularity', 'mode', 'loudness', 
                                              'time_signature', 'youtube_url']]
+
+current, peak = tracemalloc.get_traced_memory()
+print(f"Current memory usage: {current / 1024 / 1024:.2f} MB")
+print(f"Peak memory usage: {peak / 1024 / 1024:.2f} MB")
+tracemalloc.stop()
 
 def evaluate_model(recommended_songs, input_genre, num_songs=15):
    mean_cosine_similarity = recommended_songs['cosine_similarity'].mean()

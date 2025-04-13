@@ -8,7 +8,7 @@ app.jinja_env.globals.update(zip=zip)
 app.secret_key = '7Yb29#pLw*QfMv!Xt8J3zDk@5eH1Ua%'
 
 # Load and preprocess the dataset
-dataset = pd.read_csv('data/huggingface.csv', low_memory=False)
+dataset = pd.read_csv('data/huggingface.csv')
 
 artist_popularity = {}  # Initialize dictionaries to store artist popularity and unique artists
 
@@ -126,4 +126,4 @@ def search_artists():
    return jsonify(matched_artists_info[:10])  # Limit to top 10 results for efficiency
 
 if __name__ == '__main__':
-   app.run()
+   app.run(debug=True)

@@ -124,6 +124,9 @@ input[type="range"]::-moz-range-track {
     cursor: pointer;
     margin: 0 auto;
     transition: background-color 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
 .tap-tempo:hover {

@@ -8,7 +8,7 @@ app.jinja_env.globals.update(zip=zip)
 app.secret_key = '7Yb29#pLw*QfMv!Xt8J3zDk@5eH1Ua%'
 
 # Load and preprocess the dataset
-dataset = pd.read_csv('data/huggingface.csv')
+dataset = pd.read_csv('data/huggingface.csv', low_memory=False)
 
 artist_popularity = {}  # Initialize dictionaries to store artist popularity and unique artists
 
@@ -43,10 +43,6 @@ unique_artists = set(artist_popularity.keys())
 @app.route('/')
 def index():
    return render_template('home.html')
-
-@app.route('/test')
-def test():
-   return render_template('test.html')
 
 @app.route('/home')
 def home():

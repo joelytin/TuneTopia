@@ -111,6 +111,12 @@ input[type="range"]::-moz-range-track {
     margin: 1.2rem auto;
 }
 
+.tap-tempo, .start-stop, .adjust-tempo-btn, .stepper {
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
 .tap-tempo {
     width: 120px;
     height: 70px;
@@ -124,9 +130,6 @@ input[type="range"]::-moz-range-track {
     cursor: pointer;
     margin: 0 auto;
     transition: background-color 0.3s ease;
-    user-select: none;
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
 .tap-tempo:hover {
